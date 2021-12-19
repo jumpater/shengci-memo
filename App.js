@@ -1,21 +1,21 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import AppLoading from 'expo-app-loading';
+import { useFonts } from 'expo-font';
+import { SafeAreaView } from 'react-native';
+import FirstScreen from './components/FirstScreen'
+import WordList from './components/WordList';
 
 export default function App() {
+  let [fontsLoaded] = useFonts({
+    'Deng': require('./assets/fonts/Deng.otf'),
+    'NotoSansJP-Light': require('./assets/fonts/NotoSansJP-Light.otf'),
+    'NotoSansJP-Regular': require('./assets/fonts/NotoSansJP-Regular.otf'),
+  });
+  if(!fontsLoaded){ return <AppLoading /> }
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <FirstScreen />
+      <WordList />
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
