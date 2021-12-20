@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Animated, Easing, StyleSheet, Text } from 'react-native';
 
 export default FirstScreen=()=>{
-  const fadeAnim = React.useRef(new Animated.Value(1)).current
+  const fadeAnim = React.useRef(new Animated.Value(1)).current;
+  const [fadeFlag, setFadeFlag] = useState(false) 
+
   React.useEffect(()=>{
     Animated.timing(fadeAnim, {
       toValue: 0,
@@ -10,11 +12,11 @@ export default FirstScreen=()=>{
       duration: 1000,
       delay: 3000,
       useNativeDriver: true
-    }).start();
+    }).start(()=>setFadeFlag(true));
   })
   return (
     <>
-      <Animated.View style={[styles.firstScreen,{opacity: fadeAnim}]}>
+      <Animated.View style={[styles.firstScreen,{opacity: fadeAnim}, fadeFlag? {transform:[{scale: 0}],} : {}]}>
         <Text style={styles.firstTxt}>汉语生词备忘录</Text>
       </Animated.View>
     </>
