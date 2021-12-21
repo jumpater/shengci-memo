@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Serializer from './Serializer';
 
-class MemoCard{
+export default class MemoCard{
     constructor(word=null, description=null){
         this.#id = this.#generateId();
         this.#word = word;
@@ -10,8 +9,18 @@ class MemoCard{
         this.#createdAt = new Date();
     }
     #generateId(){
-        const existingIds = await AsyncStorage.getItem('existingIds');
-        return existingIds? Math.max(...JSON.parse(existingIds)) + 1 : 0;
+        const MemoIdNum = await AsyncStorage.getItem('MemoIdNum');
+        return MemoIdNum? MemoIdNum + 1 : 1;
+    }
+    //a function in order to pass StrageManager
+    passer(){
+        return {
+            id: this.#id,
+            word: this.#word,
+            description: this.#description,
+            favorite: this.#favorite,
+            createdAt: this.#createdAt,
+        }
     }
 
     /*getter*/
