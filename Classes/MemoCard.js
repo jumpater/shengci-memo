@@ -2,11 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class MemoCard{
     constructor(word=null, description=null){
-        this.#id = this.#generateId();
-        this.#word = word;
-        this.#description = description;
-        this.#favorite = false;
-        this.#createdAt = new Date();
+        #id = this.#generateId();
+        #word = word;
+        #description = description;
+        #favorite = false;
+        #createdAt = new Date();
     }
     #generateId(){
         const MemoIdNum = await AsyncStorage.getItem('MemoIdNum');
@@ -15,50 +15,71 @@ export default class MemoCard{
     //a function in order to pass StrageManager
     passer(){
         return {
-            id: this.#id,
-            word: this.#word,
-            description: this.#description,
-            favorite: this.#favorite,
-            createdAt: this.#createdAt,
+            id: #id,
+            word: #word,
+            description: #description,
+            favorite: #favorite,
+            createdAt: #createdAt,
         }
+    }
+    static include(obj){
+            if(typeof obj !== 'object')return;
+            const self = new this();
+            try{
+                self.setId(obj.id);
+                self.setWord(obj.word);
+                self.setDescription(obj.description);
+                self.setFavorite(obj.favorite);
+                self.setCreatedAt(obj.createdAt);
+            }catch(error){
+                console.log("a different object is detected")
+            }
+
+        return self;
+    }
+    delete(){
+        const json = await AsyncStorage.getItem(this.type);
+        if(!json)return;
+        const savedAry = JSON.parse(json);
+        AsyncStorage.setItem(this.type, savedAry.filter(obj => this.getId() !== obj.id));
     }
 
     /*getter*/
     getId(){
-        return this.#id;
+        return #id;
     }
     getWord(){
-        return this.#word;
+        return #word;
     } 
     getDescription(){
-        return this.#Description;
+        return #Description;
     } 
     getFavorite(){
-        return this.#favorite;
+        return #favorite;
     } 
     getCreatedAt(){
-        return this.#createdAt;
+        return #createdAt;
     }
 
     /*setter*/
     setId(id){
-        this.#Id = id;
+        #Id = id;
         return this;
     }
     setWord(word){
-        this.#word = word;
+        #word = word;
         return this;
     }
     setDescription(description){
-        this.#description = description;
+        #description = description;
         return this;
     }
     setFavorite(favorite){
-        this.#favorite = favorite;
+        #favorite = favorite;
         return this;
     }
     setCreatedAt(createdAt){
-        this.#createdAt = createdAt;
+        #createdAt = createdAt;
         return this;
     }
 }
