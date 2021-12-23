@@ -35,7 +35,7 @@ export default class StrageClassManager{
         if(typeof (new Function(`return ${qString})`)()) !== "boolean")return;
         const json = await AsyncStorage.getItem(this.type);
         const savedAry = json? JSON.parse(json): [];
-        const queriedAry = new Function(param ,`return savedAry.filter(param => ${qString})`)(q);
+        const queriedAry = new Function("param" ,`return savedAry.filter(param => ${qString})`)(q);
         return queriedAry;
     }
     queryAll(){

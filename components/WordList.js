@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Animated, Easing, StyleSheet, Text, ScrollView, View, SafeAreaView, TextInput, Button, Pressable } from 'react-native';
 import SelfText from './Common/SelfText';
 export default WordList=()=>{
-  const [enterdText, setEnterdText] = useState(null)
+  const [enterdText, setEnterdText] = useState(null);
     return (
       <>
         <SafeAreaView style={{backgroundColor: '#00BCDA',}}>
