@@ -1,12 +1,13 @@
 import React from 'react';
-import { TouchableOpacity, Pressable, TextInput, View, Text } from 'react-native';
-import MemoCard from '../../Classes/memoCard';
+import { StyleSheet, TouchableOpacity, Pressable, TextInput, View, Text } from 'react-native';
+import MemoCard from '../../Classes/MemoCard';
 
 export default function Memo(props){
     const memoCard = MemoCard.include(props.obj);
-    const [desc, onChangeDesc] = React.useState(memoCard.getDescription());
-    const [rwMode, setRwMode] = React.useState(memoCard.getDescription(false));
-    const [deleted, setDeleted] = React.useState(memoCard.getDescription(false));
+    console.log("props.obj:",props.obj);
+    const [desc, onChangeDesc] = React.useState(undefined);
+    const [rwMode, setRwMode] = React.useState(false);
+    const [deleted, setDeleted] = React.useState(false);
     return (
         <View style={[styles.memo, deleted?{scale: 0}:{}]}>
             <Pressable>
@@ -15,8 +16,9 @@ export default function Memo(props){
             <View>
                 <TextInput
                 multiline
-                onChangeText={text => onChangeDesc(text)}
+                onChangeText={text => {onChangeDesc(text)}}
                 style={styles.memoDetail}
+                defaultValue={memoCard.getDescription()}
                 value={desc}
                 editable={rwMode}
                 >
@@ -42,6 +44,9 @@ const styles = StyleSheet.create({
     memo: {
         width: "100%",
         padding: 10,
+        borderWidth: 1,
+        borderColor: "#000",
+        marginTop: 10,
     },
     memoHead:{
         flexDirection: 'row',

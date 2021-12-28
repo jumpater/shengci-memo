@@ -1,25 +1,38 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class MemoCard{
-    constructor(word=null, description=null){
-        #id = this.#generateId();
-        #word = word;
-        #description = description;
-        #favorite = false;
-        #createdAt = new Date();
+    #type="MemoCard";
+    #id;
+    #word;
+    #description;
+    #favorite;
+    #createdAt;
+    constructor(id=null, word=null, description=null){
+        this.#id = id;
+        this.#word = word;
+        this.#description = description;
+        this.#favorite = false;
+        this.#createdAt = new Date();
     }
-    #generateId(){
-        const MemoIdNum = await AsyncStorage.getItem('MemoIdNum');
-        return MemoIdNum? MemoIdNum + 1 : 1;
+    static async generateId(){
+        try{
+            const MemoIdNum = await AsyncStorage.getItem('MemoIdNum');
+            const currentNum = MemoIdNum? `${Number(MemoIdNum) + 1}` : 1;
+            await AsyncStorage.setItem('MemoIdNum', `${currentNum}`);
+            return currentNum;
+        }catch(error){
+            console.log(error)
+        }
     }
     //a function in order to pass StrageManager
     passer(){
         return {
-            id: #id,
-            word: #word,
-            description: #description,
-            favorite: #favorite,
-            createdAt: #createdAt,
+            type: this.#type,
+            id: this.#id,
+            word: this.#word,
+            description: this.#description,
+            favorite: this.#favorite,
+            createdAt: this.#createdAt,
         }
     }
     static include(obj){
@@ -32,54 +45,62 @@ export default class MemoCard{
                 self.setFavorite(obj.favorite);
                 self.setCreatedAt(obj.createdAt);
             }catch(error){
-                console.log("a different object is detected")
+                console.log(error);
+                console.log("a different object is detected");
             }
-
+            console.log("self:",self);
         return self;
     }
-    delete(){
-        const json = await AsyncStorage.getItem(this.type);
-        if(!json)return;
-        const savedAry = JSON.parse(json);
-        AsyncStorage.setItem(this.type, savedAry.filter(obj => this.getId() !== obj.id));
+    async delete(){
+        try{
+            const json = await AsyncStorage.getItem(this.type);
+            if(!json)return;
+            const savedAry = JSON.parse(json);
+            await AsyncStorage.setItem(this.type, savedAry.filter(obj => this.getId() !== obj.id));
+        }catch(error){
+            console.log(error)
+        }
     }
 
     /*getter*/
+    getType(){
+        return this.#type;
+    }
     getId(){
-        return #id;
+        return this.#id;
     }
     getWord(){
-        return #word;
+        return this.#word;
     } 
     getDescription(){
-        return #Description;
+        return this.#description;
     } 
     getFavorite(){
-        return #favorite;
+        return this.#favorite;
     } 
     getCreatedAt(){
-        return #createdAt;
+        return this.#createdAt;
     }
 
     /*setter*/
     setId(id){
-        #Id = id;
+        this.#id = id;
         return this;
     }
     setWord(word){
-        #word = word;
+        this.#word = word;
         return this;
     }
     setDescription(description){
-        #description = description;
+        this.#description = description;
         return this;
     }
     setFavorite(favorite){
-        #favorite = favorite;
+        this.#favorite = favorite;
         return this;
     }
     setCreatedAt(createdAt){
-        #createdAt = createdAt;
+        this.#createdAt = createdAt;
         return this;
     }
 }
