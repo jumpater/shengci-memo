@@ -53,10 +53,11 @@ export default class MemoCard{
     }
     async delete(){
         try{
-            const json = await AsyncStorage.getItem(this.type);
+            console.log("thisType:",this.#type)
+            const json = await AsyncStorage.getItem(this.#type);
             if(!json)return;
             const savedAry = JSON.parse(json);
-            await AsyncStorage.setItem(this.type, savedAry.filter(obj => this.getId() !== obj.id));
+            await AsyncStorage.setItem(this.#type, JSON.stringify(savedAry.filter(obj => this.#id !== obj.id)));
         }catch(error){
             console.log(error)
         }

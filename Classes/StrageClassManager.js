@@ -5,7 +5,6 @@ export default class StrageClassManager{
         this.type = ClassName;
     }
     async save(obj){
-        // await AsyncStorage.clear()
         //if json has same id then update data otherwise push new data
         try{
             console.log("save start",obj)
@@ -42,11 +41,13 @@ export default class StrageClassManager{
     }
     async query(q, qString) {
         try{
-            if(typeof q !== "string")return;
-            if(typeof (new Function(`return ${qString})`)()) !== "boolean")return;
+            if(typeof q !== "string" || typeof qString !== "string")return;
             const json = await AsyncStorage.getItem(this.type);
-            const savedAry = json? JSON.parse(json): [];
-            const queriedAry = new Function("param" ,`return savedAry.filter(param => ${qString})`)(q);
+            var seachContext = {
+                savedAry: json? JSON.parse(json): [],
+            }
+            const queriedAry = new Function("savedAry",`return savedAry.filter(${q} => ${qString})`)(seachContext.savedAry);
+            console.log("st:",queriedAry);
             return queriedAry;
         }catch(error){
             console.log(error)

@@ -13,7 +13,7 @@ export default FirstScreen=()=>{
       delay: 3000,
       useNativeDriver: true
     }).start(()=>setFadeFlag(true));
-  })
+  },[])
   return (
     <>
       <Animated.View style={[styles.firstScreen,{opacity: fadeAnim}, fadeFlag? {transform:[{scale: 0}],} : {}]}>
