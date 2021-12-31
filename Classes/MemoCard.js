@@ -12,12 +12,12 @@ export default class MemoCard{
         this.#word = word;
         this.#description = description;
         this.#favorite = false;
-        this.#createdAt = new Date();
+        this.#createdAt = new Date().getTime();
     }
     static async generateId(){
         try{
             const MemoIdNum = await AsyncStorage.getItem('MemoIdNum');
-            const currentNum = MemoIdNum? `${Number(MemoIdNum) + 1}` : 1;
+            const currentNum = MemoIdNum? Number(MemoIdNum) + 1 : 1;
             await AsyncStorage.setItem('MemoIdNum', `${currentNum}`);
             return currentNum;
         }catch(error){
@@ -48,7 +48,6 @@ export default class MemoCard{
                 console.log(error);
                 console.log("a different object is detected");
             }
-            console.log("self:",self);
         return self;
     }
     async delete(){

@@ -8,15 +8,14 @@ export default ModalCore=(props)=>{
           transparent={true}
           visible={props.modalVisible}
           onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            props.setModalVisible(!props.modalVisible);
+            props.setModalVisible(false);
           }}
         >
-          <Pressable style={styles.centeredView} onPress={()=>{Keyboard.dismiss()}}>
+          <View style={[styles.centeredView, props.wrapStyle]}>
             <View style={[styles.modalView, props.style]}>
               {props.children}
             </View>
-          </Pressable>
+          </View>
         </Modal>
     )
 }
@@ -24,7 +23,7 @@ export default ModalCore=(props)=>{
 const styles = StyleSheet.create({
     centeredView: {
       flex: 1,
-      justifyContent: "center",
+      justifyContent: "flex-end",
       alignItems: "center",
       marginTop: 22,
     },

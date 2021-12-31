@@ -1,42 +1,72 @@
 import React, { useState, useEffect } from 'react';
-import { Dimensions, TouchableOpacity, StyleSheet, Text, ScrollView, View, TextInput, Button, Pressable, } from 'react-native';
+import { Dimensions, TouchableOpacity, StyleSheet, ScrollView, View, TextInput, Pressable, Button, } from 'react-native';
 import SelfText from './Common/SelfText';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import StrageClassManager from '../Classes/StrageClassManager';
 import Memo from './Common/Memo';
 import ModalCore from '../components/Common/ModalCore';
-import MemoCard from '../Classes/MemoCard';
-import {useIsFocused} from '@react-navigation/native'
+import {useIsFocused} from '@react-navigation/native';
+import {Picker} from '@react-native-picker/picker';
 
 
 export default WordList=({ navigation })=>{
   const isFocused = useIsFocused();
   const [cards, setCards] = useState(null);
-  const [enterdText, setEnterdText] = useState(null);
-  const [creating, setCreating] = useState(false);
-  const [q, setQ] = useState("");
-  const [qString, setQstring] = useState("");
-  //to query
-  const queryCards = (q="",qString="")=>{
-    const manager = new StrageClassManager('MemoCard');
-    if(q!=="" && qString!==""){
-      manager.query(q, qString).then(queried=>{
-        console.log("queried:", queried)
-        if(!queried)return null;
-          setCards(queried.map(el=>{return <Memo nav={navigation} key={el.id} obj={el}/>}));
-      });
-    }else{
-      manager.queryAll().then(queried=>{
-        // console.log("queried:",queried);
-        if(!queried)return null;
-          setCards(queried.map(el=>{return <Memo nav={navigation} key={el.id} obj={el}/>}));
-      });
+  const [enterdText, setEnterdText] = useState("");
+  const [sort, setSort] = useState('新しい順');
+  const [sortModalVisible, setSortModalVisible] = useState(false);
+  const queryCards = async (q="",qString="")=>{
+    try{
+      const manager = new StrageClassManager('MemoCard');
+      let result = null;
+      if(q!=="" && qString!==""){
+        result = await manager.query(q, qString);
+      }else{
+        result = await manager.queryAll();
+      }
+      return result;
+    }catch(error){
+      console.log(error);
+      return [];
     }
   }
-  React.useEffect(()=>{queryCards()},[isFocused])
+  const setUpCards = (cardAry)=>{
+    if(!cardAry.length){
+      setCards(<SelfText style={styles.notfoundText}>メモが見つかりません(T-T)</SelfText>);
+      return;
+    }
+    switch(sort){
+      case '新しい順':
+        cardAry.sort((a,b)=> {console.log("date computed:",b.createdAt - a.createdAt);return b.createdAt - a.createdAt;});
+      break;
+      case '古い順':
+        cardAry.sort((a,b)=> {console.log("date computed:",a.createdAt - b.createdAt);return a.createdAt - b.createdAt});
+      break;
+      case 'お気に入り':
+        cardAry = cardAry.filter((card)=>card.favorite);
+      break;
+    }
+    console.log('setUpAfter:',cardAry);
+    if(!cardAry.length){
+      setCards(
+      <SelfText style={styles.notfoundText}>メモが見つかりません(T-T)</SelfText>
+      );
+      return;
+    }
+    setCards(cardAry.map(el=>{return <Memo nav={navigation} key={el.id} obj={el}/>}));
+  }
+  React.useEffect(async()=>{
+    console.log("sort:", sort);
+    const result = await queryCards('q', enterdText? `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`:"");
+    setUpCards(result);
+  },[isFocused, sort])
 
     return (
       <>
+      <SortModal
+      modalVisible={sortModalVisible}
+      setModalVisible={setSortModalVisible}
+      setSort={setSort}
+      />
         <Pressable onPress={()=>{navigation.navigate('NewMemo',{existingMemo: null});}}>
             <View style={styles.plus}>
                 <SelfText style={styles.plusMark}>+ </SelfText>
@@ -54,15 +84,28 @@ export default WordList=({ navigation })=>{
                         returnKeyType='done'
                         placeholder='キーワードを入力してください'
                         onChangeText={(text)=> setEnterdText(text)}
-                        onEndEditing={()=>{
-                          queryCards('q', `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`);
+                        onEndEditing={async ()=>{
+                          if(enterdText !== ""){
+                              const result = await queryCards('q', `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`);
+                              setUpCards(result);
+                          }else{
+                            const result = await queryCards();
+                            setUpCards(result);
+                          }
                         }}
                         >
                         </TextInput>
                     </View>
                     <View style={styles.searchSorted}>
                         <SelfText style={{fontSize: 14,}}>並びかえ:</SelfText>
-                        <SelfText style={{fontSize: 14,}}> 新しい順</SelfText>
+                        <TouchableOpacity
+                        onPress={()=>{
+                          setSortModalVisible(true);
+                        }}>
+                          <SelfText style={{fontSize: 14,}}>
+                             {sort}
+                          </SelfText>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </View>
@@ -72,6 +115,33 @@ export default WordList=({ navigation })=>{
         </ScrollView>
       </>
     )
+}
+
+const SortModal = (props)=>{
+  const [newSort, setNewSort] = useState("newer");
+    return (
+      <ModalCore
+      modalVisible={props.modalVisible}
+      wrapStyle={styles.sortModalWrapper}
+      style={styles.sortModal}
+      setModalVisible={props.setModalVisible}
+      >
+        <Pressable style={{flex: 7,width: '100%',}} onPress={()=>{props.setSort(newSort);props.setModalVisible(false);}}></Pressable>
+        <View style={{flex: 3,width: '100%',backgroundColor: '#fff', alignItems: 'center',justifyContent: 'center',}}>
+          <Picker
+              style={styles.sortPicker}
+              itemStyle={styles.sortPickerItem}
+              selectedValue={newSort}
+              onValueChange={(itemValue, itemIndex) =>
+                setNewSort(itemValue)
+              }>
+              <Picker.Item label="新しい順" value="新しい順" />
+              <Picker.Item label="古い順" value="古い順" />
+              <Picker.Item label="お気に入り" value="お気に入り" />
+          </Picker>
+        </View>
+      </ModalCore>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -120,24 +190,29 @@ const styles = StyleSheet.create({
         marginTop: 15,
         flexDirection: 'row',
     },
-    createModal:{
+    sortModal:{
       borderRadius: 0,
-      // shadowRadius: 0,
-      height: 300,
+      height: '100%',
+      margin: 0,
+      padding: 0,
+      backgroundColor: 'transparent',
     },
-    createInput:{
-      height: 50,
-      borderColor: "#000",
-      borderWidth: 1,
-      width: 300,
-      padding: 5,
-      marginBottom: 20,
+    sortModalWrapper:{
+      // justifyContent: 'flex-end',
     },
-    createTextarea:{
-      height: 100,
-      borderColor: "#000",
-      borderWidth: 1,
-      width:300,
-      padding: 5,
+    sortPicker:{
+      width: Dimensions.get('window').width -70,
     },
+    notfoundText:{
+      fontFamily: 'NotoSansJP-Regular',
+      width: '100%',
+      textAlign: 'center',
+      height: 200,
+      paddingTop: 90,
+      color: '#B5B5B5',
+    },
+    // sortPickerItem:{
+    //   height: 150, 
+    //   width: '100%',
+    // },
   });

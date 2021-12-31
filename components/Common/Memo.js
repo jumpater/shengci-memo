@@ -1,10 +1,11 @@
 import React from 'react';
 import { LayoutAnimation,StyleSheet, TouchableOpacity, Pressable,View, Text} from 'react-native';
 import MemoCard from '../../Classes/MemoCard';
+import SelfText from './SelfText';
+import StrageClassManager from '../../Classes/StrageClassManager';
 
 export default function Memo(props){
     const memoCard = MemoCard.include(props.obj);
-    console.log("props.obj:",props.obj);
     const [deleted, setDeleted] = React.useState(false);
     //連打禁止
     const [dontMash,setDontMash] = React.useState(false);
@@ -19,7 +20,21 @@ export default function Memo(props){
             setOnDetail(!onDetail);
         }}
         >
-            <View style={[styles.memoHead, onDetail?{maxHeight: '100%',}:{}]}><Text numberOfLines={onDetail?0:1} style={{fontSize: 18,}}>{memoCard.getWord()}</Text></View>
+            <View style={[styles.memoHead, onDetail?{maxHeight: '100%',}:{}]}>
+                <SelfText numberOfLines={onDetail?0:1} style={styles.memoHeadText}>{memoCard.getWord()}</SelfText>
+                <TouchableOpacity
+                style={{width: "10%",}}
+                disabled={dontMash}
+                onPress={async()=>{
+                    setDontMash(true);
+                    memoCard.setFavorite(true);
+                    const manager = new StrageClassManager('MemoCard');
+                    await manager.save(memoCard.passer());
+                    setDontMash(false);
+                }}
+                ><SelfText>☆</SelfText>
+                </TouchableOpacity>
+            </View>
             <View style={[styles.memoDetail, onDetail?{}:{height: 0,paddingTop: 0,paddingBottom: 0,}]}>
                 <Text style={[styles.memoDesc, onDetail?{}:{minHeight:0,}]}>{memoCard.getDescription()}</Text>
                 <View style={styles.memoBtns}>
@@ -66,6 +81,11 @@ const styles = StyleSheet.create({
         padding: 15,
         maxHeight: 60,
         minHeight: 60,
+    },
+    memoHeadText:{
+        width: '90%',
+        fontSize: 18,
+        fontFamily: 'NotoSansJP-Regular',
     },
     memoDetail:{
         borderTopWidth: 0,

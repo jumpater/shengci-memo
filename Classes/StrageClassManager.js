@@ -14,7 +14,7 @@ export default class StrageClassManager{
             console.log("savedAry:",savedAry)
             let exsistFlag = false;
             //check having same id
-            if(savedAry !== []){
+            if(savedAry.length){
                 for(const saved of savedAry){
                     if(obj.id === saved.id){
                         //update
@@ -25,9 +25,8 @@ export default class StrageClassManager{
                 }
             }
             // in case that does not have same id
-            console.log("existFlag:",!exsistFlag)
+            console.log("existFlag:",exsistFlag)
             if(!exsistFlag){
-                console.log("beforesave:",obj)
                 savedAry.push(obj);
                 console.log("save:",JSON.stringify(savedAry))
                 //idNum(Id生成時に使用)を更新
@@ -43,15 +42,16 @@ export default class StrageClassManager{
         try{
             if(typeof q !== "string" || typeof qString !== "string")return;
             const json = await AsyncStorage.getItem(this.type);
+            if(!json)return [];
             var seachContext = {
-                savedAry: json? JSON.parse(json): [],
+                savedAry: JSON.parse(json),
             }
+            if(!seachContext.savedAry.length)return [];
             const queriedAry = new Function("savedAry",`return savedAry.filter(${q} => ${qString})`)(seachContext.savedAry);
-            console.log("st:",queriedAry);
             return queriedAry;
         }catch(error){
             console.log(error)
-            return null;
+            return [];
         }
     }
     async queryAll(){
@@ -61,7 +61,7 @@ export default class StrageClassManager{
             return queriedAry;
         }catch(error){
             console.log(error)
-            return null;
+            return [];
         }
     }
 }

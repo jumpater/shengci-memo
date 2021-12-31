@@ -6,7 +6,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function NewMemo({ route, navigation }){
     const {existingMemo} = route.params;
-    console.log('new:',existingMemo)
     const [input, setInput] = useState(existingMemo?existingMemo.getWord():"");
     const [textarea, setTextarea] = useState(existingMemo?existingMemo.getDescription():"");
     const [editable, setEditable] = useState(true);
@@ -41,13 +40,11 @@ export default function NewMemo({ route, navigation }){
         onPress={async ()=>{
           //save new
           // await AsyncStorage.clear()
-          console.log("hello")
           console.log("saving");
           setEditable(false);
           const manager = new StrageClassManager("MemoCard");
           //id生成
           if(existingMemo){
-            console.log("passed:", existingMemo.passer())
             existingMemo.setWord(input);
             existingMemo.setDescription(textarea);
             await manager.save(existingMemo.passer())
