@@ -27,12 +27,13 @@ export default function Memo(props){
                 disabled={dontMash}
                 onPress={async()=>{
                     setDontMash(true);
-                    memoCard.setFavorite(true);
+                    memoCard.setFavorite(!memoCard.getFavorite());
                     const manager = new StrageClassManager('MemoCard');
                     await manager.save(memoCard.passer());
+                    await props.favFunc();
                     setDontMash(false);
                 }}
-                ><SelfText>☆</SelfText>
+                ><SelfText>{memoCard.getFavorite()?'★':'☆'}</SelfText>
                 </TouchableOpacity>
             </View>
             <View style={[styles.memoDetail, onDetail?{}:{height: 0,paddingTop: 0,paddingBottom: 0,}]}>

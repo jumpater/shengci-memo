@@ -3,14 +3,16 @@ import { Keyboard, Dimensions,LayoutAnimation, StyleSheet, TouchableOpacity, Pre
 import StrageClassManager from '../Classes/StrageClassManager';
 import MemoCard from '../Classes/MemoCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoadAnim from './Common/LoadAnim';
 
 export default function NewMemo({ route, navigation }){
     const {existingMemo} = route.params;
     const [input, setInput] = useState(existingMemo?existingMemo.getWord():"");
     const [textarea, setTextarea] = useState(existingMemo?existingMemo.getDescription():"");
     const [editable, setEditable] = useState(true);
-    const [dontMash, setDontMash] = useState(false);
     return (
+    <>
+    <LoadAnim loadingNow={!editable}/>
     <Pressable style={styles.container} onPress={()=>{Keyboard.dismiss()}}>
       <View style={{marginTop: 40,}}>
         <TextInput
@@ -38,23 +40,22 @@ export default function NewMemo({ route, navigation }){
         style={styles.createBtn}
         disabled={input=="" || textarea==""}
         onPress={async ()=>{
-          //save new
-          // await AsyncStorage.clear()
           console.log("saving");
           setEditable(false);
+          // await AsyncStorage.clear()
           const manager = new StrageClassManager("MemoCard");
-          //id生成
           if(existingMemo){
             existingMemo.setWord(input);
             existingMemo.setDescription(textarea);
-            await manager.save(existingMemo.passer())
+            await manager.save(existingMemo.passer());
           }else{
+            //新規ならid生成
             const id = await MemoCard.generateId();
             await manager.save(new MemoCard(id, input, textarea).passer())
           }
-
           setInput("");
           setTextarea("");
+          setEditable(true);
           navigation.navigate('WordList');
         }}
         >
@@ -62,6 +63,8 @@ export default function NewMemo({ route, navigation }){
         </TouchableOpacity>
       </View>
     </Pressable>
+    </>
+
     )
 }
 

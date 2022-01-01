@@ -42,6 +42,7 @@ export default class MemoCard{
                 self.setId(obj.id);
                 self.setWord(obj.word);
                 self.setDescription(obj.description);
+                console.log("obj.favorite", obj.favorite)
                 self.setFavorite(obj.favorite);
                 self.setCreatedAt(obj.createdAt);
             }catch(error){

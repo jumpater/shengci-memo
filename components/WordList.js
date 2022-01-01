@@ -6,6 +6,7 @@ import Memo from './Common/Memo';
 import ModalCore from '../components/Common/ModalCore';
 import {useIsFocused} from '@react-navigation/native';
 import {Picker} from '@react-native-picker/picker';
+import LoadAnim from './Common/LoadAnim';
 
 
 export default WordList=({ navigation })=>{
@@ -14,7 +15,9 @@ export default WordList=({ navigation })=>{
   const [enterdText, setEnterdText] = useState("");
   const [sort, setSort] = useState('新しい順');
   const [sortModalVisible, setSortModalVisible] = useState(false);
+  const [loadingNow, setLoadingNow] = useState(false);
   const queryCards = async (q="",qString="")=>{
+    setLoadingNow(true);
     try{
       const manager = new StrageClassManager('MemoCard');
       let result = null;
@@ -32,14 +35,15 @@ export default WordList=({ navigation })=>{
   const setUpCards = (cardAry)=>{
     if(!cardAry.length){
       setCards(<SelfText style={styles.notfoundText}>メモが見つかりません(T-T)</SelfText>);
+      setLoadingNow(false);
       return;
     }
     switch(sort){
       case '新しい順':
-        cardAry.sort((a,b)=> {console.log("date computed:",b.createdAt - a.createdAt);return b.createdAt - a.createdAt;});
+        cardAry.sort((a,b)=> {return b.createdAt - a.createdAt;});
       break;
       case '古い順':
-        cardAry.sort((a,b)=> {console.log("date computed:",a.createdAt - b.createdAt);return a.createdAt - b.createdAt});
+        cardAry.sort((a,b)=> {return a.createdAt - b.createdAt});
       break;
       case 'お気に入り':
         cardAry = cardAry.filter((card)=>card.favorite);
@@ -47,21 +51,24 @@ export default WordList=({ navigation })=>{
     }
     console.log('setUpAfter:',cardAry);
     if(!cardAry.length){
-      setCards(
-      <SelfText style={styles.notfoundText}>メモが見つかりません(T-T)</SelfText>
-      );
+      setCards(<SelfText style={styles.notfoundText}>メモが見つかりません(T-T)</SelfText>);
+      setLoadingNow(false);
       return;
     }
-    setCards(cardAry.map(el=>{return <Memo nav={navigation} key={el.id} obj={el}/>}));
+    setCards(cardAry.map(el=>{return <Memo nav={navigation} key={el.id} obj={el} favFunc={async()=>{
+      const result = await queryCards('q', enterdText? `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`:"");
+      setUpCards(result);
+    }}/>}));
+    setLoadingNow(false);
   }
   React.useEffect(async()=>{
-    console.log("sort:", sort);
     const result = await queryCards('q', enterdText? `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`:"");
     setUpCards(result);
   },[isFocused, sort])
 
     return (
       <>
+      <LoadAnim loadingNow={loadingNow}/>
       <SortModal
       modalVisible={sortModalVisible}
       setModalVisible={setSortModalVisible}
@@ -73,7 +80,6 @@ export default WordList=({ navigation })=>{
                 <SelfText style={styles.plusTxt}>新しい単語を追加</SelfText>
             </View>
         </Pressable>
-        <ScrollView>
             <View style={styles.inner}>
                 <View style={styles.search}>
                     <SelfText style={{fontSize: 14,}}>キーワード検索:</SelfText>
@@ -109,16 +115,15 @@ export default WordList=({ navigation })=>{
                     </View>
                 </View>
             </View>
-            <View>
+            <ScrollView style={styles.cards}>
               {cards}
-            </View>
-        </ScrollView>
+            </ScrollView>
       </>
     )
 }
 
 const SortModal = (props)=>{
-  const [newSort, setNewSort] = useState("newer");
+  const [newSort, setNewSort] = useState("新しい順");
     return (
       <ModalCore
       modalVisible={props.modalVisible}
@@ -169,7 +174,7 @@ const styles = StyleSheet.create({
       marginRight: 10,
     },
     search:{
-      marginTop: 40,
+      marginTop: 20,
     },
     searchKeyword:{
       marginTop: 10,
@@ -180,11 +185,6 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       paddingRight: 5,
       paddingLeft: 5,
-    },
-    searchKeywordBtn: {
-        backgroundColor: '#00BCDA',
-        width: 35,
-        height: 45,
     },
     searchSorted: {
         marginTop: 15,
@@ -211,6 +211,15 @@ const styles = StyleSheet.create({
       paddingTop: 90,
       color: '#B5B5B5',
     },
+    cards:{
+      flex:1,
+      marginBottom: 20,
+      marginTop: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: "#000",
+      borderTopWidth: 1,
+      borderTopColor: "#000",
+    }
     // sortPickerItem:{
     //   height: 150, 
     //   width: '100%',
