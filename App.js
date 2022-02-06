@@ -2,6 +2,7 @@ import React from 'react';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import FirstScreen from './components/FirstScreen';
+import NewMemoButton from './components/Common/NewMemoButton';
 import WordList from './components/WordList';
 import NewMemo from './components/NewMemo';
 import {Platform, UIManager,} from 'react-native';
@@ -26,7 +27,14 @@ const Home = ()=>{
         fontSize: 18,
       },
     }}>
-      <Stack.Screen name="WordList" component={WordList} options={{title: "単語リスト",}} />
+      <Stack.Screen name="WordList" component={WordList} options={({navigation})=>({
+        title: "単語リスト",
+        headerRight:()=>{
+          return (
+          <NewMemoButton navigation={navigation} />
+          )
+        }
+        })} />
       <Stack.Screen name="NewMemo" component={NewMemo} options={{title: "新しいメモを作成",}} />
     </Stack.Navigator>
   );

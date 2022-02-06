@@ -7,6 +7,7 @@ import ModalCore from '../components/Common/ModalCore';
 import {useIsFocused} from '@react-navigation/native';
 import {Picker} from '@react-native-picker/picker';
 import LoadAnim from './Common/LoadAnim';
+import MemoPager from './Common/MemoPager';
 
 
 export default WordList=({ navigation })=>{
@@ -16,6 +17,10 @@ export default WordList=({ navigation })=>{
   const [sort, setSort] = useState('新しい順');
   const [sortModalVisible, setSortModalVisible] = useState(false);
   const [loadingNow, setLoadingNow] = useState(false);
+  const [listNum, setListNum] = useState(1);
+  const [pager, setPager] = useState(null);
+
+  //検索機能によるキーワードによる絞り込みを含んだデータ取得
   const queryCards = async (q="",qString="")=>{
     setLoadingNow(true);
     try{
@@ -32,12 +37,7 @@ export default WordList=({ navigation })=>{
       return [];
     }
   }
-  const setUpCards = (cardAry)=>{
-    if(!cardAry.length){
-      setCards(<SelfText style={styles.notfoundText}>メモが見つかりません(T-T)</SelfText>);
-      setLoadingNow(false);
-      return;
-    }
+  const sortCards = (cardAry, listNum)=>{
     switch(sort){
       case '新しい順':
         cardAry.sort((a,b)=> {return b.createdAt - a.createdAt;});
@@ -49,22 +49,47 @@ export default WordList=({ navigation })=>{
         cardAry = cardAry.filter((card)=>card.favorite);
       break;
     }
+    //小数点切り上げで10ずづで区切った時のリストの数
+    const allListNum = Math.ceil(cardAry.length / 10)
+    // const allListNum = Math.ceil(cardAry.length / 1)
+    console.log(`allListNum:${allListNum}`)
+    console.log(`listNum:${listNum}`)
+    if(allListNum > 1){
+      //ページ遷移用ページャセット
+      setPager(<MemoPager listNum={listNum} allListNum={allListNum} setListNum={setListNum}></MemoPager>);
+      //カードセット
+      cardAry = cardAry.slice((listNum-1)*10,listNum*10)
+    }
+    return cardAry;
+  }
+
+  //配列と単語メモのマップ⇒描画
+  const setUpCards = (cardAry)=>{
+    if(!cardAry.length){
+      setCards(<SelfText style={styles.notfoundText}>メモが見つかりません(T-T)</SelfText>);
+      setLoadingNow(false);
+      return;
+    }
     console.log('setUpAfter:',cardAry);
     if(!cardAry.length){
       setCards(<SelfText style={styles.notfoundText}>メモが見つかりません(T-T)</SelfText>);
       setLoadingNow(false);
       return;
     }
+    //favFuncはお気に入り登録した後データを再読み込みするための関数
     setCards(cardAry.map(el=>{return <Memo nav={navigation} key={el.id} obj={el} favFunc={async()=>{
       const result = await queryCards('q', enterdText? `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`:"");
-      setUpCards(result);
+      setUpCards(sortCards(result, listNum));
     }}/>}));
     setLoadingNow(false);
   }
-  React.useEffect(async()=>{
-    const result = await queryCards('q', enterdText? `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`:"");
-    setUpCards(result);
-  },[isFocused, sort])
+    React.useEffect(async()=>{
+      const result = await queryCards('q', enterdText? `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`:"");
+      setUpCards(sortCards(result, listNum));
+    },[isFocused, sort, listNum]);
+    React.useDidUpdateEffect
+  
+  //絞り込み条件が変わった時1ページ目に戻りたい
 
     return (
       <>
@@ -74,15 +99,8 @@ export default WordList=({ navigation })=>{
       setModalVisible={setSortModalVisible}
       setSort={setSort}
       />
-        <Pressable onPress={()=>{navigation.navigate('NewMemo',{existingMemo: null});}}>
-            <View style={styles.plus}>
-                <SelfText style={styles.plusMark}>+ </SelfText>
-                <SelfText style={styles.plusTxt}>新しい単語を追加</SelfText>
-            </View>
-        </Pressable>
             <View style={styles.inner}>
                 <View style={styles.search}>
-                    <SelfText style={{fontSize: 14,}}>キーワード検索:</SelfText>
                     <View style={styles.searchKeyword}>
                         <TextInput 
                         style={styles.searchKeywordInput}
@@ -93,10 +111,10 @@ export default WordList=({ navigation })=>{
                         onEndEditing={async ()=>{
                           if(enterdText !== ""){
                               const result = await queryCards('q', `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`);
-                              setUpCards(result);
+                              setUpCards(sortCards(result, listNum));
                           }else{
                             const result = await queryCards();
-                            setUpCards(result);
+                            setUpCards(sortCards(result, listNum));
                           }
                         }}
                         >
@@ -108,9 +126,11 @@ export default WordList=({ navigation })=>{
                         onPress={()=>{
                           setSortModalVisible(true);
                         }}>
-                          <SelfText style={{fontSize: 14,}}>
-                             {sort}
-                          </SelfText>
+                          <View style={styles.sortTxt}>
+                            <SelfText style={{fontSize: 12, color: "#fff",}}>
+                              {sort}
+                            </SelfText>
+                          </View>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -118,6 +138,7 @@ export default WordList=({ navigation })=>{
             <ScrollView style={styles.cards}>
               {cards}
             </ScrollView>
+            {pager}
       </>
     )
 }
@@ -154,41 +175,32 @@ const styles = StyleSheet.create({
       paddingLeft: 15,
       paddingRight: 15,
     },
-    plus:{
-      flexDirection: 'row',
-      alignItems: 'center',
-      height: 70,
-      paddingRight: 15,
-      paddingLeft: 15,
-      borderColor: '#B5B5B5',
-      borderWidth: 1,
-    },
-    plusTxt:{
-      lineHeight: 30,
-      fontSize: 18,
-    },
-    plusMark:{
-      color: '#00BCDA',  
-      fontSize: 30,
-      fontFamily: 'Deng',
-      marginRight: 10,
-    },
     search:{
-      marginTop: 20,
-    },
-    searchKeyword:{
       marginTop: 10,
     },
+    searchKeyword:{
+      marginTop: 0,
+    },
     searchKeywordInput:{
-      width: Dimensions.get('window').width -30,
-      height: 40,
-      borderWidth: 1,
-      paddingRight: 5,
-      paddingLeft: 5,
+      width: Dimensions.get('window').width -25,
+      height: 35,
+      backgroundColor: "#E4E4E4",
+      borderRadius: 100,
+      paddingRight: 10,
+      paddingLeft: 10,
     },
     searchSorted: {
         marginTop: 15,
         flexDirection: 'row',
+    },
+    sortTxt:{
+      backgroundColor: "#00BCDA",
+      borderRadius: 100,
+      paddingRight: 5,
+      paddingLeft: 5,
+      marginLeft: 8,
+      paddingTop:2,
+      paddingBottom: 2,
     },
     sortModal:{
       borderRadius: 0,
@@ -214,14 +226,7 @@ const styles = StyleSheet.create({
     cards:{
       flex:1,
       marginBottom: 20,
-      marginTop: 20,
-      borderBottomWidth: 1,
-      borderBottomColor: "#000",
-      borderTopWidth: 1,
+      marginTop: 10,
       borderTopColor: "#000",
     }
-    // sortPickerItem:{
-    //   height: 150, 
-    //   width: '100%',
-    // },
   });
