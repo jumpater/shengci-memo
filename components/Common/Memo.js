@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutAnimation,StyleSheet, TouchableOpacity, Pressable,View, Text} from 'react-native';
+import { LayoutAnimation,StyleSheet, TouchableOpacity, Pressable,View, Text, Alert} from 'react-native';
 import MemoCard from '../../Classes/MemoCard';
 import SelfText from './SelfText';
 import StrageClassManager from '../../Classes/StrageClassManager';
@@ -41,12 +41,26 @@ export default function Memo(props){
                 <View style={styles.memoBtns}>
                     <TouchableOpacity
                     disabled={dontMash}
-                    onPress={async()=>{
-                        setDontMash(true);
-                        await memoCard.delete();
-                        setDeleted(true);
-                        setDontMash(false);
-                    }}
+                    onPress={()=>{
+                        Alert.alert("メモを削除",
+                        `\"${memoCard.getWord()}\"`,
+                        [
+                            {
+                                text:"キャンセル",
+                                onPress:()=>{},
+                            },
+                            {
+                                text: "削除",
+                                onPress:async()=>{
+                                    setDontMash(true);
+                                    await memoCard.delete();
+                                    setDeleted(true);
+                                    setDontMash(false);
+                                },
+                            },
+                        ])
+                    }
+                    }
                     style={{marginRight: 10,}}
                     >
                         <Text>delete</Text>

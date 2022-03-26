@@ -1,6 +1,6 @@
 import React from "react";
 import SelfText from "./SelfText";
-import { View,StyleSheet,TouchableOpacity } from "react-native";
+import { View,StyleSheet,TouchableOpacity,Image } from "react-native";
 
 export default MemoPager=(props)=>{
     let ary=[]
@@ -8,16 +8,50 @@ export default MemoPager=(props)=>{
 const getNumBtn = (i)=>{
     return (
         <TouchableOpacity
+        key={i}
         style={[styles.numBtn,i===props.listNum?styles.current:{}]}
         onPress={()=>{
             props.setListNum(i);
             }
         }
         >
-            <SelfText key={i} style={styles.num}>{i}</SelfText>
+            <SelfText style={styles.num}>{i}</SelfText>
         </TouchableOpacity>
     )
 }
+
+const getGoTopBtn=()=>{
+    return (
+        <TouchableOpacity
+        key={"topBtn"}
+        style={styles.goBtn}
+        onPress={()=>{
+            props.setListNum(1);
+            }}>
+                <Image
+                style={[styles.btnImage, {transform: [{rotate: "180deg"}]}]}
+                source={require("../../assets/doubleArrow.png")}  
+                />
+        </TouchableOpacity>
+    )
+}
+
+const getGoBottomBtn=()=>{
+    return (
+        <TouchableOpacity
+        key={"bottomBtn"}
+        style={styles.goBtn}
+        onPress={()=>{
+            props.setListNum(props.allListNum);
+            }}>
+                <Image
+                style={styles.btnImage}
+                source={require("../../assets/doubleArrow.png")}  
+                />
+        </TouchableOpacity>
+    )
+}
+
     //総ページ数5以下なら普通に出す
     if(props.allListNum <=5){
         for(i=1;i <= props.allListNum;i++){
@@ -28,16 +62,22 @@ const getNumBtn = (i)=>{
         for(i=1;i <= 5;i++){
             ary.push(getNumBtn(i))
         }
+        //一番後ろへいくボタン
+        ary.push(getGoBottomBtn())
         //現在ページ数+2が総ページ数以上なら上限はallListNum
     }else if(props.listNum+2 >= props.allListNum){
-        for(i=props.listNum-2;i <= props.allListNum;i++){
+        //先頭ページへいくボタン
+        ary.push(getGoTopBtn())
+        for(i=props.allListNum-4;i <= props.allListNum;i++){
             ary.push(getNumBtn(i))
         }
          //それ以外なら現在ページ数-2~現在ページ数+2を表示
     }else{
+        ary.push(getGoTopBtn())
         for(i=props.listNum-2;i <= props.listNum+2;i++){
             ary.push(getNumBtn(i))
         }
+        ary.push(getGoBottomBtn())
     }
 
     return (
@@ -52,7 +92,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         justifyContent: "center",
-        marginBottom: 5,
+        marginBottom: 10,
     },
     numBtn:{
         width: 40,
@@ -67,5 +107,16 @@ const styles = StyleSheet.create({
     current:{
         backgroundColor: "#E4E4E4",
         borderRadius: 5,
-    }
+    },
+    goBtn:{
+        height: 40,
+        width: 40,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    btnImage:{
+        height: 18,
+        width: 18,
+        resizeMode: 'cover',
+    },
 })

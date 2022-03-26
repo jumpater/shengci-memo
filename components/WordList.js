@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dimensions, TouchableOpacity, StyleSheet, ScrollView, View, TextInput, Pressable, Button, } from 'react-native';
 import SelfText from './Common/SelfText';
 import StrageClassManager from '../Classes/StrageClassManager';
 import Memo from './Common/Memo';
 import ModalCore from '../components/Common/ModalCore';
-import {useIsFocused} from '@react-navigation/native';
 import {Picker} from '@react-native-picker/picker';
 import LoadAnim from './Common/LoadAnim';
 import MemoPager from './Common/MemoPager';
+import {useIsFocused} from "@react-navigation/native";
 
 
 export default WordList=({ navigation })=>{
@@ -19,7 +19,7 @@ export default WordList=({ navigation })=>{
   const [loadingNow, setLoadingNow] = useState(false);
   const [listNum, setListNum] = useState(1);
   const [pager, setPager] = useState(null);
-
+  const isInitialMount = useRef(true);
   //検索機能によるキーワードによる絞り込みを含んだデータ取得
   const queryCards = async (q="",qString="")=>{
     setLoadingNow(true);
@@ -50,15 +50,20 @@ export default WordList=({ navigation })=>{
       break;
     }
     //小数点切り上げで10ずづで区切った時のリストの数
-    const allListNum = Math.ceil(cardAry.length / 10)
     // const allListNum = Math.ceil(cardAry.length / 1)
+    const allListNum = Math.ceil(cardAry.length / 10)
     console.log(`allListNum:${allListNum}`)
     console.log(`listNum:${listNum}`)
     if(allListNum > 1){
+      console.log("pager set")
       //ページ遷移用ページャセット
       setPager(<MemoPager listNum={listNum} allListNum={allListNum} setListNum={setListNum}></MemoPager>);
       //カードセット
+      // cardAry = cardAry.slice((listNum-1)*1,listNum*1)
       cardAry = cardAry.slice((listNum-1)*10,listNum*10)
+    }else{
+      //ページ数1以下ならページネーションの存在価値なし
+      setPager(null);
     }
     return cardAry;
   }
@@ -70,7 +75,6 @@ export default WordList=({ navigation })=>{
       setLoadingNow(false);
       return;
     }
-    console.log('setUpAfter:',cardAry);
     if(!cardAry.length){
       setCards(<SelfText style={styles.notfoundText}>メモが見つかりません(T-T)</SelfText>);
       setLoadingNow(false);
@@ -83,13 +87,37 @@ export default WordList=({ navigation })=>{
     }}/>}));
     setLoadingNow(false);
   }
+    //絞り込み条件が変わった時1ページ目に戻りたい
     React.useEffect(async()=>{
-      const result = await queryCards('q', enterdText? `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`:"");
-      setUpCards(sortCards(result, listNum));
-    },[isFocused, sort, listNum]);
-    React.useDidUpdateEffect
+      //リロード時の下のuseEffectとの二重実行を防ぐ
+      if(isInitialMount.current){
+        isInitialMount.current=false
+      }else{
+        if(listNum!==1){
+          setListNum(1);
+        }else{
+          if(enterdText !== ""){
+            const result = await queryCards('q', `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`);
+            setUpCards(sortCards(result, listNum));
+          }else{
+          const result = await queryCards();
+          setUpCards(sortCards(result, listNum));
+          }
+        } 
+      }
+    },[sort]);
   
-  //絞り込み条件が変わった時1ページ目に戻りたい
+    React.useEffect(async()=>{
+      if(isFocused){
+        if(enterdText !== ""){
+          const result = await queryCards('q', `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`);
+          setUpCards(sortCards(result, listNum));
+        }else{
+        const result = await queryCards();
+        setUpCards(sortCards(result, listNum));
+        }
+      }
+    },[listNum, isFocused]);
 
     return (
       <>
@@ -109,12 +137,18 @@ export default WordList=({ navigation })=>{
                         placeholder='キーワードを入力してください'
                         onChangeText={(text)=> setEnterdText(text)}
                         onEndEditing={async ()=>{
-                          if(enterdText !== ""){
-                              const result = await queryCards('q', `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`);
-                              setUpCards(sortCards(result, listNum));
+                          if(listNum!==1){
+                            //ページ変更でuseEffectによりリロード
+                            setListNum(1);
                           }else{
-                            const result = await queryCards();
-                            setUpCards(sortCards(result, listNum));
+                            //1ページ目ならuseEffectが発火しないため手動でリロード
+                              if(enterdText !== ""){
+                                  const result = await queryCards('q', `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`);
+                                  setUpCards(sortCards(result, listNum));
+                              }else{
+                                const result = await queryCards();
+                                setUpCards(sortCards(result, listNum));
+                              }
                           }
                         }}
                         >

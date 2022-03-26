@@ -5,6 +5,8 @@ import FirstScreen from './components/FirstScreen';
 import NewMemoButton from './components/Common/NewMemoButton';
 import WordList from './components/WordList';
 import NewMemo from './components/NewMemo';
+import ScanScreen from './components/ScanScreen';
+import ReadImage from './components/ReadImage';
 import {Platform, UIManager,} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -40,10 +42,29 @@ const Home = ()=>{
   );
 }
 
-const Scan= ()=>{
-  return(<View style={{flex:1,justifyContent:'center',alignItems:'center'}}><Text>Scan</Text></View>)
+const Scan = ()=>{
+  const Stack = createNativeStackNavigator();
+  return(
+    <Stack.Navigator
+    screenOptions={{
+      headerBackTitleVisible: false,
+      headerStyle: {
+        backgroundColor: '#00BCDA',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontFamily: 'NotoSansJP-Regular',
+        fontWeight: 'bold',
+        fontSize: 18,
+      },
+    }}>
+      <Stack.Screen name="camera" component={ScanScreen} options={({navigation})=>({
+        title: "画像を読み取る",
+        })} />
+      <Stack.Screen name="ReadImage" component={ReadImage} options={{title: "読み取った単語のメモを作成",}} />
+    </Stack.Navigator>
+  );
 }
-
 
 if (
   Platform.OS === "android" &&
@@ -69,10 +90,9 @@ export default function App() {
         backgroundColor: "#00BCDA",
         height: 80,
       }}
-      screenOptions={{
+      screenOptions={({ route })=>{({
         
-
-      }}>
+      })}}>
         <Tab.Screen name="Memo" component={Home} options={{title: 'メモ'}}/>
         <Tab.Screen name="Scan" component={Scan} options={{title: "画像をスキャン",}} />
       </Tab.Navigator>
