@@ -36,7 +36,31 @@ export default ScanScreen=({navigation})=>{
                  exif: true,
                });
                camera.pausePreview();
-               navigation.navigate('ReadImage',image.uri)
+               let formData = new FormData();
+               formData.append('file', createImageObj(image));
+               try{
+                  const result = await fetch('https://obscure-fjord-44952.herokuapp.com/hanzi-ocr/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                      'content-type': 'multipart/form-data',
+                    }
+                  })
+                  console.log(result)
+                  const json = await result.json();
+                  const ary = JSON.parse(json);
+                  if(ary){
+                    navigation.navigate('ReadImage',
+                    {
+                      predictions:ary
+                    })
+                  }else{
+                    console.log("画像の読み込みに失敗しました")
+                  }
+               }catch(e){
+                  console.log(e)
+                  console.log("api was failed")
+               }
                camera.resumePreview();
               }}>
               <Image style={{height:70, width:70,}} source={require("../assets/shutter-button.png")}/>
@@ -52,6 +76,16 @@ export default ScanScreen=({navigation})=>{
         </Camera>
       </View>
     );
+}
+
+const createImageObj = (image)=>{
+  let localUri = image.uri;
+  console.log(localUri);
+  let filename = localUri.split('/').pop();
+  let match = /\.(\w+)$/.exec(filename);
+  let type = match ? `image/${match[1]}` : `image`;
+  console.log(type)
+  return { uri: localUri, name: filename, type };
 }
 
 const styles = StyleSheet.create({

@@ -50,7 +50,6 @@ export default WordList=({ navigation })=>{
       break;
     }
     //小数点切り上げで10ずづで区切った時のリストの数
-    // const allListNum = Math.ceil(cardAry.length / 1)
     const allListNum = Math.ceil(cardAry.length / 10)
     console.log(`allListNum:${allListNum}`)
     console.log(`listNum:${listNum}`)

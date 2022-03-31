@@ -4,6 +4,7 @@ import { useFonts } from 'expo-font';
 import FirstScreen from './components/FirstScreen';
 import NewMemoButton from './components/Common/NewMemoButton';
 import WordList from './components/WordList';
+import AddList from './components/AddList';
 import NewMemo from './components/NewMemo';
 import ScanScreen from './components/ScanScreen';
 import ReadImage from './components/ReadImage';
@@ -58,10 +59,12 @@ const Scan = ()=>{
         fontSize: 18,
       },
     }}>
+      <Stack.Screen name="AddList" component={AddList} options={{title: "メモを作成",}} />
       <Stack.Screen name="camera" component={ScanScreen} options={({navigation})=>({
         title: "画像を読み取る",
         })} />
-      <Stack.Screen name="ReadImage" component={ReadImage} options={{title: "読み取った単語のメモを作成",}} />
+      <Stack.Screen name="ReadImage" component={ReadImage} options={{title: "読み取った単語を選択",}} />
+      {/* <Stack.Screen name="AddList" component={AddList} options={{title: "メモを作成",}} /> */}
     </Stack.Navigator>
   );
 }
