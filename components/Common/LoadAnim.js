@@ -7,9 +7,6 @@ export default LoadAnim = (props)=>{
         <View style={[styles.container, typeof props.wrapStyle === 'undefined'?props.wrapStyle:{}, props.loadingNow?{}:{transform:[{scale: 0}]}]}>
             <ActivityIndicator style={[styles.loader, typeof props.style === 'undefined'?props.style:{}]} size="large" color="#00BCDA" animating={props.loadingNow}/>
         </View>
-        // <View style={[styles.container, typeof props.wrapStyle === 'undefined'?props.wrapStyle:{}]}>
-        //     <ActivityIndicator style={[styles.loader, typeof props.style === 'undefined'?props.style:{}]} size="large" color="#00BCDA" animating={true}/>
-        // </View>
     );
 }
 

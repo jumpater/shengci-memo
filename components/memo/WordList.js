@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Dimensions, TouchableOpacity, StyleSheet, ScrollView, View, TextInput, Pressable, Button, } from 'react-native';
-import SelfText from './Common/SelfText';
-import StrageClassManager from '../Classes/StrageClassManager';
-import Memo from './Common/Memo';
-import ModalCore from '../components/Common/ModalCore';
+import SelfText from '../Common/SelfText';
+import StrageClassManager from '../../Classes/StrageClassManager';
+import Memo from '../Common/Memo';
+import ModalCore from '../Common/ModalCore';
 import {Picker} from '@react-native-picker/picker';
-import LoadAnim from './Common/LoadAnim';
-import MemoPager from './Common/MemoPager';
+import LoadAnim from '../Common/LoadAnim';
+import MemoPager from '../Common/MemoPager';
 import {useIsFocused} from "@react-navigation/native";
 
 
@@ -69,11 +69,6 @@ export default WordList=({ navigation })=>{
 
   //配列と単語メモのマップ⇒描画
   const setUpCards = (cardAry)=>{
-    if(!cardAry.length){
-      setCards(<SelfText style={styles.notfoundText}>メモが見つかりません(T-T)</SelfText>);
-      setLoadingNow(false);
-      return;
-    }
     if(!cardAry.length){
       setCards(<SelfText style={styles.notfoundText}>メモが見つかりません(T-T)</SelfText>);
       setLoadingNow(false);

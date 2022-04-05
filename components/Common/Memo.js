@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutAnimation,StyleSheet, TouchableOpacity, Pressable,View, Text, Alert} from 'react-native';
+import { LayoutAnimation,StyleSheet, TouchableOpacity, Pressable,View, Text, Alert, Image} from 'react-native';
 import MemoCard from '../../Classes/MemoCard';
 import SelfText from './SelfText';
 import StrageClassManager from '../../Classes/StrageClassManager';
@@ -33,14 +33,16 @@ export default function Memo(props){
                     await props.favFunc();
                     setDontMash(false);
                 }}
-                ><SelfText>{memoCard.getFavorite()?'★':'☆'}</SelfText>
+                >
+                    <Image style={{height:20,width: 20,}} source={memoCard.getFavorite()?require("../../assets/star02.png"):require("../../assets/star01.png")}/>
                 </TouchableOpacity>
             </View>
             <View style={[styles.memoDetail, onDetail?{}:{height: 0,paddingTop: 0,paddingBottom: 0,}]}>
-                <Text style={[styles.memoDesc, onDetail?{}:{minHeight:0,}]}>{memoCard.getDescription()}</Text>
+                <SelfText style={[styles.memoDesc, onDetail?{}:{minHeight:0,}]}>{memoCard.getDescription()}</SelfText>
                 <View style={styles.memoBtns}>
                     <TouchableOpacity
                     disabled={dontMash}
+                    style={[styles.deleteButton,onDetail?{}:{height: 0,}]}
                     onPress={()=>{
                         Alert.alert("メモを削除",
                         `\"${memoCard.getWord()}\"`,
@@ -61,11 +63,11 @@ export default function Memo(props){
                         ])
                     }
                     }
-                    style={{marginRight: 10,}}
                     >
-                        <Text>delete</Text>
+                        <SelfText style={{fontSize: 12, color:"#fff",}}>削除</SelfText>
                     </TouchableOpacity>
                     <TouchableOpacity
+                    style={[styles.rewriteButton, onDetail?{}:{height: 0,}]}
                     disabled={dontMash}
                     onPress={()=>{
                         setDontMash(true);
@@ -73,7 +75,7 @@ export default function Memo(props){
                         setDontMash(false);
                     }}
                     >
-                        <Text>rewrite</Text>
+                        <SelfText style={{fontSize: 10, color:"#fff",}}>書き直す</SelfText>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -108,7 +110,9 @@ const styles = StyleSheet.create({
         borderRightWidth: 1,
         borderBottomWidth: 1,
         borderColor: "#B5B5B5",
-        padding: 15,
+        paddingTop:15,
+        paddingHorizontal:15,
+        paddingBottom: 5,
     },
     memoDesc:{
         minHeight: 80,
@@ -116,5 +120,24 @@ const styles = StyleSheet.create({
     memoBtns:{
         justifyContent: 'flex-end',
         flexDirection: 'row',
-    }
+        position: "relative",
+        zIndex: 1,
+    },
+    deleteButton:{
+        backgroundColor: "#FF4848",
+        width: 60,
+        height: 24,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 5,
+        marginRight: 10,
+    },
+    rewriteButton:{
+        backgroundColor: "#00DA83",
+        width: 60,
+        height: 24,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 5,
+    },
 })

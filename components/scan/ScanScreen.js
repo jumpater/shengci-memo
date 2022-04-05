@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import {StyleSheet,View,TouchableOpacity,Image} from 'react-native';
+import {StyleSheet,View,TouchableOpacity,Image,Alert} from 'react-native';
 import { Camera } from 'expo-camera';
-import SelfText from './Common/SelfText';
+import SelfText from '../Common/SelfText';
+import LoadAnim from '../Common/LoadAnim';
 
 export default ScanScreen=({navigation})=>{
     const [hasPermission, setHasPermission] = useState(null);
-    const [camera, setCamera] = useState(null)
-    const [isFlashMode, setIsFlashMode] = useState(Camera.Constants.FlashMode.off)
+    const [camera, setCamera] = useState(null);
+    const [loadingNow, setLoadingNow] = useState(false);
+    
     useEffect(() => {
       (async () => {
         const { status } = await Camera.requestCameraPermissionsAsync();
@@ -21,9 +23,10 @@ export default ScanScreen=({navigation})=>{
       return <SelfText>カメラへのアクセスが出来ませんでした。</SelfText>;
     }
     return (
+      <>
+      <LoadAnim loadingNow={loadingNow} />
       <View style={styles.container}>
         <Camera style={styles.camera}
-         flashMode={isFlashMode}
          ref={ref=>{
            setCamera(ref)
          }}>
@@ -31,10 +34,10 @@ export default ScanScreen=({navigation})=>{
             <TouchableOpacity
               onPress={async() => {
                const image = await camera.takePictureAsync({
-                 quality: 1.0,
-                 base64: true,
+                 quality: 1.2,
                  exif: true,
                });
+               setLoadingNow(true);
                camera.pausePreview();
                let formData = new FormData();
                formData.append('file', createImageObj(image));
@@ -46,35 +49,54 @@ export default ScanScreen=({navigation})=>{
                       'content-type': 'multipart/form-data',
                     }
                   })
-                  console.log(result)
                   const json = await result.json();
                   const ary = JSON.parse(json);
-                  if(ary){
+                  console.log(ary.length)
+                  if(ary.length){
                     navigation.navigate('ReadImage',
                     {
-                      predictions:ary
+                      predictions:ary,
                     })
+                    setLoadingNow(false)
+                    camera.resumePreview();
                   }else{
-                    console.log("画像の読み込みに失敗しました")
+                    setLoadingNow(false)
+                    camera.resumePreview();
+                    Alert.alert("エラー","中国語を正しく認識出来ませんでした",[
+                      {
+                          text: "撮り直す",
+                          onPress: () =>{},
+                          style: "default",
+                      }
+                  ]);
                   }
                }catch(e){
+                  setLoadingNow(false)
+                  camera.resumePreview();
                   console.log(e)
                   console.log("api was failed")
+                  Alert.alert("エラー","電波環境などをお確かめの上もう一度お試し下さい",[
+                    {
+                        text: "撮り直す",
+                        onPress: () =>{},
+                        style: "default",
+                    }
+                ]);
                }
-               camera.resumePreview();
               }}>
-              <Image style={{height:70, width:70,}} source={require("../assets/shutter-button.png")}/>
+              <Image style={{height:70, width:70,}} source={require("../../assets/shutter-button.png")}/>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.flashButton}
               onPress={() => {
                 setIsFlashMode(isFlashMode === Camera.Constants.FlashMode.off?isFlashMode === Camera.Constants.FlashMode.on:Camera.Constants.FlashMode.off) 
               }}>
-              <Image source={isFlashMode === Camera.Constants.FlashMode.off?require("../assets/flash-button.png"):require("../assets/notflash-button.png")}/>
-            </TouchableOpacity>
+              <Image source={isFlashMode === Camera.Constants.FlashMode.off?require("../../assets/flash-button.png"):require("../../assets/notflash-button.png")}/>
+            </TouchableOpacity> */}
           </View>
         </Camera>
       </View>
+      </>
     );
 }
 

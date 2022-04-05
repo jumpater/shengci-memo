@@ -12,3 +12,4 @@ web-build/
 assets/fonts/
 # macOS
 .DS_Store
+app.config.js

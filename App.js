@@ -1,18 +1,17 @@
 import React from 'react';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
-import FirstScreen from './components/FirstScreen';
+import FirstScreen from './components/Common/FirstScreen';
 import NewMemoButton from './components/Common/NewMemoButton';
-import WordList from './components/WordList';
-import AddList from './components/AddList';
-import NewMemo from './components/NewMemo';
-import ScanScreen from './components/ScanScreen';
-import ReadImage from './components/ReadImage';
+import WordList from './components/memo/WordList';
+import NewMemo from './components/memo/NewMemo';
+import AddList from './components/scan/AddList';
+import ScanScreen from './components/scan/ScanScreen';
+import ReadImage from './components/scan/ReadImage';
 import {Platform, UIManager,} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { View,Text } from 'react-native';
 
 const Home = ()=>{
   const Stack = createNativeStackNavigator();
@@ -59,12 +58,11 @@ const Scan = ()=>{
         fontSize: 18,
       },
     }}>
-      <Stack.Screen name="AddList" component={AddList} options={{title: "メモを作成",}} />
       <Stack.Screen name="camera" component={ScanScreen} options={({navigation})=>({
         title: "画像を読み取る",
         })} />
       <Stack.Screen name="ReadImage" component={ReadImage} options={{title: "読み取った単語を選択",}} />
-      {/* <Stack.Screen name="AddList" component={AddList} options={{title: "メモを作成",}} /> */}
+      <Stack.Screen name="AddList" component={AddList} options={{title: "メモを作成",}} />
     </Stack.Navigator>
   );
 }
@@ -92,15 +90,11 @@ export default function App() {
       barStyle={{
         backgroundColor: "#00BCDA",
         height: 80,
-      }}
-      screenOptions={({ route })=>{({
-        
-      })}}>
+      }}>
         <Tab.Screen name="Memo" component={Home} options={{title: 'メモ'}}/>
         <Tab.Screen name="Scan" component={Scan} options={{title: "画像をスキャン",}} />
       </Tab.Navigator>
     </NavigationContainer>
-    // <FirstScreen />
   );
 };
 

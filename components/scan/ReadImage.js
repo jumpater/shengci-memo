@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import {StyleSheet,ScrollView,Pressable,Image,View,TouchableOpacity} from 'react-native';
-import SelfText from './Common/SelfText';
+import {StyleSheet,ScrollView,Pressable,Image,View,TouchableOpacity,Alert} from 'react-native';
+import SelfText from '../Common/SelfText';
 
 export default ReadImage=(route,navigation)=>{
     const [cards, setCards] = useState(null);
     const [willSave, setWillSave] = useState(new Map());
     useEffect(()=>{
         let {predictions} = route.route.params;
-        console.log(predictions)
         predictions = Array.from(new Set(predictions))
         setCards(predictions.map((value,index)=>{
             return (
@@ -24,10 +23,20 @@ export default ReadImage=(route,navigation)=>{
             <View style={styles.addButtonContainer}>
                 <TouchableOpacity style={styles.addButton}
                 onPress={()=>{
-                    route.navigation.navigate('AddList',
-                    {
-                      words:willSave
-                    })
+                    if(willSave.size!==0){
+                        route.navigation.navigate('AddList',
+                        {
+                          words:JSON.stringify(Object.fromEntries(willSave))
+                        })
+                    }else{
+                        Alert.alert("追加する単語がありません。","一つ以上追加する単語を選択して下さい",[
+                            {
+                                text: "OK",
+                                onPress: () =>{},
+                                style: "default",
+                            }
+                        ])
+                    }
                 }}>
                     <SelfText style={{color: "#fff",}}>次へ</SelfText>
                 </TouchableOpacity>
@@ -40,13 +49,12 @@ const PredictedCard =(props)=>{
     const [selected, setSelected] = useState(false);
     useEffect(()=>{
         if(selected){
-            props.willSave.set(props.value, props.index);
+            props.willSave.set(props.value,"");
         }else{
             if(props.willSave.has(props.value)){
                 props.willSave.delete(props.value)
             }
         }
-        console.log(props.willSave);
         props.setWillSave(props.willSave);
     },[selected])
     return (
@@ -58,8 +66,8 @@ const PredictedCard =(props)=>{
             <SelfText style={styles.cardTxt}>{props.value}</SelfText>
             {
                 selected?
-                <Image style={styles.cardStatsMark} source={require('../assets/check-mark.png')} />:
-                <Image style={[styles.cardStatsMark,{width: 17,height: 17,}]} source={require('../assets/plus-mark2.png')}/>
+                <Image style={styles.cardStatsMark} source={require('../../assets/check-mark.png')} />:
+                <Image style={[styles.cardStatsMark,{width: 17,height: 17,}]} source={require('../../assets/plus-mark2.png')}/>
             }
         </Pressable>
     )

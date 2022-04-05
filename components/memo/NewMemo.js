@@ -1,20 +1,23 @@
 import React,{useState} from 'react';
-import { Keyboard, Dimensions,LayoutAnimation, StyleSheet, TouchableOpacity, Pressable, TextInput, View, Text } from 'react-native';
-import StrageClassManager from '../Classes/StrageClassManager';
-import MemoCard from '../Classes/MemoCard';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import LoadAnim from './Common/LoadAnim';
+import { Keyboard, Dimensions, StyleSheet, TouchableOpacity, Pressable, TextInput, View,Alert } from 'react-native';
+import StrageClassManager from '../../Classes/StrageClassManager';
+import MemoCard from '../../Classes/MemoCard';
+import LoadAnim from '../Common/LoadAnim';
+import SelfText from '../Common/SelfText';
+import Constants from 'expo-constants';
 
 export default function NewMemo({ route, navigation }){
     const {existingMemo} = route.params;
     const [input, setInput] = useState(existingMemo?existingMemo.getWord():"");
     const [textarea, setTextarea] = useState(existingMemo?existingMemo.getDescription():"");
     const [editable, setEditable] = useState(true);
+    const [translated, setTranslated] = useState(false);
     return (
     <>
     <LoadAnim loadingNow={!editable}/>
     <Pressable style={styles.container} onPress={()=>{Keyboard.dismiss()}}>
       <View style={{marginTop: 40,}}>
+        <SelfText style={{textAlign: "right",marginRight: 15,fontSize: 14,}}><SelfText style={[{fontSize:14,},input.length > 100?{color: "#FF4848",}:{}]}>{input.length}</SelfText>/100</SelfText>
         <TextInput
           style={styles.createInput}
           value={input}
@@ -25,9 +28,17 @@ export default function NewMemo({ route, navigation }){
           </TextInput>
       </View>
       <View>
+        <SelfText style={{textAlign:"right",marginRight: 15,fontSize: 14,}}>
+          <SelfText style={[{fontSize: 14,},textarea.length > 200?{color: "#FF4848",}:{}]}>{textarea.length}</SelfText>
+          /200</SelfText>
         <TextInput
         multiline
-        onChangeText={text => setTextarea(text)}
+        onChangeText={text =>{
+          if(translated){
+            setTranslated(false);
+          }
+          setTextarea(text);
+        }}
         value={textarea}
         editable={editable}
         style={styles.createTextarea}
@@ -35,12 +46,37 @@ export default function NewMemo({ route, navigation }){
         >
         </TextInput>
       </View>
-      <View style={{justifyContent:'center',alignItems: 'center', marginTop: 15,}}>
+      <TouchableOpacity
+      disabled={input === "" || input.length > 100 || translated}
+      style={[styles.translateButton, input === "" || input.length > 100 || translated?{opacity: 0.2,}:{}]}
+      onPress={async()=>{
+            if(input !==""){
+              setEditable(false);
+              const result = await fetch(`https://api-free.deepl.com/v2/translate?auth_key=${Constants.manifest.extra.translateApikey}&text=${input}&target_lang=JA`);
+              const obj = await result.json();
+              setTextarea(obj.translations[0].text);
+              setTranslated(true);
+              setEditable(true);
+            }
+        }}>
+          <SelfText style={{color: "#fff",fontSize: 10,letterSpacing: 1}}>自動翻訳する</SelfText>
+      </TouchableOpacity>
+      <View style={{justifyContent:'center',alignItems: 'center', marginTop: 30,}}>
         <TouchableOpacity
-        style={styles.createBtn}
+        style={[styles.createBtn,input=="" || textarea==""?{opacity: 0.2,}:{}]}
         disabled={input=="" || textarea==""}
         onPress={async ()=>{
           console.log("saving");
+          if(input.length > 100 || textarea.length > 200){
+            Alert.alert("文字数の超過","文字数制限(単語100字, 説明200字)を超過しています。指定文字以内に書き直して下さい",    [
+              {
+                text: "OK",
+                onPress: () =>{},
+                style: "default",
+              },
+            ])
+            return;
+          }
           setEditable(false);
           // await AsyncStorage.clear()
           const manager = new StrageClassManager("MemoCard");
@@ -59,7 +95,7 @@ export default function NewMemo({ route, navigation }){
           navigation.navigate('WordList');
         }}
         >
-          <Text style={styles.createBtnTxt}>保存する</Text>
+          <SelfText style={styles.createBtnTxt}>保存する</SelfText>
         </TouchableOpacity>
       </View>
     </Pressable>
@@ -83,7 +119,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
       },
       createTextarea:{
-        height: 100,
+        height: 200,
         marginRight: 15,
         marginLeft: 15,
         borderColor: "#B5B5B5",
@@ -110,4 +146,15 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: "#fff",
       },
+      translateButton:{
+        marginTop: 10,
+        marginRight: 15,
+        marginLeft: "auto",
+        width: 85,
+        height: 28,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#BD00DA",
+        borderRadius: 5,
+    },
 })
