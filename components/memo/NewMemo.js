@@ -78,7 +78,6 @@ export default function NewMemo({ route, navigation }){
             return;
           }
           setEditable(false);
-          // await AsyncStorage.clear()
           const manager = new StrageClassManager("MemoCard");
           if(existingMemo){
             existingMemo.setWord(input);

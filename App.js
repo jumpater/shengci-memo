@@ -9,7 +9,7 @@ import NewMemo from './components/memo/NewMemo';
 import AddList from './components/scan/AddList';
 import ScanScreen from './components/scan/ScanScreen';
 import ReadImage from './components/scan/ReadImage';
-import {Platform, UIManager,Image,Text} from 'react-native';
+import {Platform, UIManager,Image} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';

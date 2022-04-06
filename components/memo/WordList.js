@@ -8,9 +8,9 @@ import {Picker} from '@react-native-picker/picker';
 import LoadAnim from '../Common/LoadAnim';
 import MemoPager from '../Common/MemoPager';
 import {useIsFocused} from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
-export default WordList=({ navigation })=>{
+export default WordList=({ route,navigation })=>{
   const isFocused = useIsFocused();
   const [cards, setCards] = useState(null);
   const [enterdText, setEnterdText] = useState("");
@@ -84,6 +84,7 @@ export default WordList=({ navigation })=>{
     //絞り込み条件が変わった時1ページ目に戻りたい
     React.useEffect(async()=>{
       //リロード時の下のuseEffectとの二重実行を防ぐ
+      await AsyncStorage.clear()
       if(isInitialMount.current){
         isInitialMount.current=false
       }else{
