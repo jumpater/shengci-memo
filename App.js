@@ -2,16 +2,17 @@ import React from 'react';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import FirstScreen from './components/Common/FirstScreen';
+import SelfText from './components/Common/SelfText';
 import NewMemoButton from './components/Common/NewMemoButton';
 import WordList from './components/memo/WordList';
 import NewMemo from './components/memo/NewMemo';
 import AddList from './components/scan/AddList';
 import ScanScreen from './components/scan/ScanScreen';
 import ReadImage from './components/scan/ReadImage';
-import {Platform, UIManager,} from 'react-native';
+import {Platform, UIManager,Image,Text} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const Home = ()=>{
   const Stack = createNativeStackNavigator();
@@ -74,7 +75,7 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const Tab = createMaterialBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 export default function App() {
   let [fontsLoaded] = useFonts({
     'Deng': require('./assets/fonts/Deng.otf'),
@@ -87,12 +88,28 @@ export default function App() {
       <Tab.Navigator
       initialRouteName='Memo'
       backBehavior="none"
-      barStyle={{
-        backgroundColor: "#00BCDA",
-        height: 80,
+      screenOptions={{
+        headerShown:false,
+        tabBarLabelPosition: "below-icon",
+        tabBarShowLabel:true,
+        tabBarStyle:{
+          backgroundColor: "#00BCDA",
+          height: 80,
+        },
+        tabBarItemStyle:{
+          paddingTop: 10,
+        },
       }}>
-        <Tab.Screen name="Memo" component={Home} options={{title: 'メモ'}}/>
-        <Tab.Screen name="Scan" component={Scan} options={{title: "画像をスキャン",}} />
+        <Tab.Screen name="Memo" component={Home} options={{
+          title: 'メモ',
+          tabBarLabel:({focused,color})=><SelfText style={[{fontSize: 10,fontFamily: 'NotoSansJP-Regular',fontWeight: 'bold',},focused?{color: "#DADA00",}:{color: "#fff",}]}>メモ</SelfText>,
+          tabBarIcon:({focused,color,size})=><Image source={focused?require("./assets/icon-memo-active.png"):require("./assets/icon-memo.png")} style={{height: "100%", resizeMode: "contain",marginBottom: 5,}}/>,
+          }}/>
+        <Tab.Screen name="Scan" component={Scan} options={{
+          title: "画像をスキャン",
+          tabBarLabel:({focused,color})=><SelfText style={[{fontSize: 10,fontFamily: 'NotoSansJP-Regular',fontWeight: 'bold'},focused?{color: "#DADA00",}:{color: "#fff",}]}>画像をスキャン</SelfText>,
+          tabBarIcon:({focused,color,size})=><Image source={focused?require("./assets/icon-scanner-active.png"):require("./assets/icon-scanner.png")} style={{height: "100%",resizeMode: "contain",marginBottom: 5,}}/>,
+          }} />
       </Tab.Navigator>
     </NavigationContainer>
   );

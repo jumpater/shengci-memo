@@ -35,7 +35,6 @@ export default ScanScreen=({navigation})=>{
               onPress={async() => {
                const image = await camera.takePictureAsync({
                  quality: 1.2,
-                 exif: true,
                });
                setLoadingNow(true);
                camera.pausePreview();
