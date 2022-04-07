@@ -4,8 +4,12 @@ import { useFonts } from 'expo-font';
 import FirstScreen from './components/Common/FirstScreen';
 import SelfText from './components/Common/SelfText';
 import NewMemoButton from './components/Common/NewMemoButton';
+import NewFolderButton from './components/Common/NewFolderButton';
+import FolderDetail from './components/memo/FolderDetail';
 import WordList from './components/memo/WordList';
+import MemoFolders from './components/memo/MemoFolders';
 import NewMemo from './components/memo/NewMemo';
+import NewFolder from './components/memo/NewFolder';
 import AddList from './components/scan/AddList';
 import ScanScreen from './components/scan/ScanScreen';
 import ReadImage from './components/scan/ReadImage';
@@ -18,6 +22,7 @@ const Home = ()=>{
   const Stack = createNativeStackNavigator();
   return(
     <Stack.Navigator
+    initialRouteName='MemoFolders'
     screenOptions={{
       headerBackTitleVisible: false,
       headerStyle: {
@@ -30,6 +35,18 @@ const Home = ()=>{
         fontSize: 18,
       },
     }}>
+      <Stack.Screen name="MemoFolders" component={MemoFolders} options={({navigation})=>({
+        title: "単語フォルダー",
+        headerRight:()=>{
+          return (
+          <NewFolderButton navigation={navigation}/>
+          )
+        }
+      })} />
+      <Stack.Screen name="NewFolder" component={NewFolder} options={{title: "新しいフォルダーを作成",}} />
+      <Stack.Screen name="FolderDetail" component={FolderDetail} options={({route, navigation})=>({
+        title: `フォルダー: ${route.params.folderName}`,
+      })} />
       <Stack.Screen name="WordList" component={WordList} options={({navigation})=>({
         title: "単語リスト",
         headerRight:()=>{

@@ -83,8 +83,6 @@ export default WordList=({ route,navigation })=>{
   }
     //絞り込み条件が変わった時1ページ目に戻りたい
     React.useEffect(async()=>{
-      //リロード時の下のuseEffectとの二重実行を防ぐ
-      await AsyncStorage.clear()
       if(isInitialMount.current){
         isInitialMount.current=false
       }else{

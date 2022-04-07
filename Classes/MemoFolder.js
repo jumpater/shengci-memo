@@ -6,8 +6,10 @@ export default class MemoFolder{
     #name;
     #memoNum;
     #createdAt;
-    constructor(name){
+    constructor(id,name){
+        this.#id = id;
         this.#name = name;
+        this.#memoNum = 0;
         this.#createdAt = new Date().getTime();
     }
     static async generateId(){
