@@ -21,7 +21,7 @@ export default function Memo(props){
         }}
         >
             <View style={[styles.memoHead, onDetail?{maxHeight: '100%',}:{}]}>
-                <SelfText numberOfLines={onDetail?0:1} style={styles.memoHeadText}>{memoCard.getWord()}</SelfText>
+                <SelfText numberOfLines={onDetail?0:1} ellipsizeMode="tail" style={styles.memoHeadText}>{memoCard.getWord()}</SelfText>
                 <TouchableOpacity
                 style={{width: "10%",}}
                 disabled={dontMash}

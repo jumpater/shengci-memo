@@ -25,7 +25,7 @@ export default function NewMemo({ route, navigation }){
       </View>
       <View style={{justifyContent:'center',alignItems: 'center', marginTop: 30,}}>
         <TouchableOpacity
-        style={[styles.createBtn,]}
+        style={[styles.createBtn,input === ""?{opacity: 0.2,}:{}]}
         disabled={input==""}
         onPress={async ()=>{
           if(input.length > 50){

@@ -11,14 +11,19 @@ export default function MemoFolders({ route, navigation }){
     const isFocused = useIsFocused();
     [foldersEl, setFoldersEl] = useState(null);
     [loadingNow, setLoadingNow] = useState(false);
-    useEffect(async()=>{
-        const manager = new StrageClassManager('MemoFolder');
-        const memoFolders = await manager.queryAll();
-        console.log(memoFolders);
-        if(memoFolders.length){
-            setFoldersEl(memoFolders.map((folder)=><Folder key={folder.id} name={folder.name} navigation={navigation} />));
-        }
-        console.log(foldersEl);
+    useEffect(()=>{
+        (async()=>{
+            const manager = new StrageClassManager('MemoFolder');
+            const memoFolders = await manager.queryAll();
+            console.log(memoFolders);
+            if(memoFolders.length){
+                setFoldersEl(memoFolders.map((folder)=><Folder key={folder.id} id={folder.id} name={folder.name} memoNum={folder.memoNum} createdAt={folder.createdAt} navigation={navigation} />));
+            }else{
+                //to keep consistency when all folders are deleted
+                setFoldersEl(null);
+            }
+            console.log(foldersEl);
+        })();
     },[isFocused])
     return (
         <>
@@ -27,6 +32,7 @@ export default function MemoFolders({ route, navigation }){
             {foldersEl?<ScrollView>{foldersEl}</ScrollView>:
             <View style={{flex:1,justifyContent: "center",alignItems: "center",}}>
                 <SelfText style={{textAlign: "center",color: '#B5B5B5',fontFamily: 'NotoSansJP-Regular',}}>単語フォルダーが見つかりません(T-T)</SelfText>
+                <SelfText style={{textAlign: "center",color: '#B5B5B5',fontFamily: 'NotoSansJP-Regular',}}>右上「+」ボタンから追加して下さい</SelfText>
             </View>}
         </View>
         </>
@@ -39,15 +45,19 @@ function Folder(props){
         style={styles.memoFolder}
         onPress={()=>{
             props.navigation.navigate("WordList",{
+                id: props.name,
                 folderName:props.name
               })
         }}>
-            <SelfText style={styles.memoFolderText}>{props.name}</SelfText>
+            <SelfText numberOfLines={1} ellipsizeMode="tail" style={styles.memoFolderText}>{props.name}</SelfText>
             <Pressable
             style={{height: "100%",justifyContent: "center",}}
             onPress={()=>{
                 props.navigation.navigate("FolderDetail",{
-                    folderName:props.name
+                    id:props.id,
+                    folderName: props.name,
+                    createdAt: props.createdAt,
+                    memoNum: props.memoNum,
                   })
             }}
             >

@@ -3,7 +3,7 @@ import {Text, StyleSheet} from 'react-native';
 
 export default SelfText=(props)=>{
     return (
-        <Text style={[styles.text,props.style]}>{props.children}</Text>
+        <Text numberOfLines={props.numberOfLines?props.numberOfLines:0} ellipsizeMode={props.ellipsizeMode?props.ellipsizeMode:"tail"} style={[styles.text,props.style]}>{props.children}</Text>
     );
 }
 

@@ -6,11 +6,11 @@ export default class MemoFolder{
     #name;
     #memoNum;
     #createdAt;
-    constructor(id,name){
+    constructor(id,name,memoNum=0,createdAt=null){
         this.#id = id;
         this.#name = name;
-        this.#memoNum = 0;
-        this.#createdAt = new Date().getTime();
+        this.#memoNum = memoNum;
+        this.#createdAt = createdAt?createdAt:new Date().getTime();
     }
     static async generateId(){
         try{
@@ -52,6 +52,10 @@ export default class MemoFolder{
             if(!json)return;
             const savedAry = JSON.parse(json);
             await AsyncStorage.setItem(this.#type, JSON.stringify(savedAry.filter(obj => this.#id !== obj.id)));
+            console.log(`memoNum: ${this.#memoNum}`);
+            if(this.#memoNum!=0){
+                await AsyncStorage.remove(MemoCard + this.#id);
+            }
         }catch(error){
             console.log(error)
         }
