@@ -4,8 +4,9 @@ import StrageClassManager from '../../Classes/StrageClassManager';
 import MemoFolder from '../../Classes/MemoFolder';
 import LoadAnim from '../Common/LoadAnim';
 import SelfText from '../Common/SelfText';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function NewMemo({ route, navigation }){
+export default function NewFolder({ route, navigation }){
     const [input, setInput] = useState("");
     const [editable, setEditable] = useState(true);
     return (
@@ -39,6 +40,8 @@ export default function NewMemo({ route, navigation }){
             return;
           }
           setEditable(false);
+          //debug
+          // await AsyncStorage.clear();
           const manager = new StrageClassManager("MemoFolder");
           const id = await MemoFolder.generateId();
           await manager.save(new MemoFolder(id, input).passer())

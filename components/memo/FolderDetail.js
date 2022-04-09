@@ -32,6 +32,7 @@ export default function FolderDetail({ route, navigation }){
             style={styles.boxLine}
             onPress={()=>{
                 navigation.navigate("NewMemo",{
+                    id:route.params.id,
                     existingMemo: null,
                     folderName: route.params.folderName,
                 });
@@ -43,8 +44,8 @@ export default function FolderDetail({ route, navigation }){
             style={styles.boxLine}
             onPress={()=>{
                 navigation.navigate("WordList",{
-                    id: route.params.name,
-                    folderName:route.params.name
+                    id: route.params.id,
+                    folderName:route.params.folderName
                   })
             }}
             >
@@ -55,7 +56,7 @@ export default function FolderDetail({ route, navigation }){
             onPress={async()=>{
                 try{
                     setLoadingNow(true);
-                    const folder = new MemoFolder(route.params.id,route.params.folderName);
+                    const folder = new MemoFolder(route.params.id,route.params.folderName,route.params.memoNum);
                     await folder.delete();
                     setLoadingNow(false);
                     navigation.navigate("MemoFolders");

@@ -14,9 +14,9 @@ export default class MemoFolder{
     }
     static async generateId(){
         try{
-            const FolderIdNum = await AsyncStorage.getItem('FolderIdNum');
+            const FolderIdNum = await AsyncStorage.getItem('MemoFolderIdNum');
             const currentNum = FolderIdNum? Number(FolderIdNum) + 1 : 1;
-            await AsyncStorage.setItem('FolderIdNum', `${currentNum}`);
+            await AsyncStorage.setItem('MemoFolderIdNum', `${currentNum}`);
             return currentNum;
         }catch(error){
             console.log(error)
@@ -47,14 +47,15 @@ export default class MemoFolder{
     }
     async delete(){
         try{
-            console.log("thisName:",this.#type);
+            console.log("thisType:",this.#type);
             const json = await AsyncStorage.getItem(this.#type);
             if(!json)return;
             const savedAry = JSON.parse(json);
             await AsyncStorage.setItem(this.#type, JSON.stringify(savedAry.filter(obj => this.#id !== obj.id)));
-            console.log(`memoNum: ${this.#memoNum}`);
+            console.log(this.#memoNum)
             if(this.#memoNum!=0){
-                await AsyncStorage.remove(MemoCard + this.#id);
+                await AsyncStorage.removeItem("MemoCard" + this.#id);
+                await AsyncStorage.removeItem("MemoCard" +this.#id + "IdNum");
             }
         }catch(error){
             console.log(error)

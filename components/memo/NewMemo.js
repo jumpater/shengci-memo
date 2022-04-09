@@ -78,20 +78,23 @@ export default function NewMemo({ route, navigation }){
             return;
           }
           setEditable(false);
-          const manager = new StrageClassManager("MemoCard");
+          const manager = new StrageClassManager("MemoCard"+route.params.id);
           if(existingMemo){
             existingMemo.setWord(input);
             existingMemo.setDescription(textarea);
             await manager.save(existingMemo.passer());
           }else{
             //新規ならid生成
-            const id = await MemoCard.generateId();
-            await manager.save(new MemoCard(id, input, textarea).passer())
+            const id = await MemoCard.generateId("MemoCard"+route.params.id);
+            await manager.save(new MemoCard(route.params.id , id, input, textarea).passer())
           }
           setInput("");
           setTextarea("");
           setEditable(true);
-          navigation.navigate('WordList');
+          navigation.navigate('WordList',{
+            id: route.params.id,
+            folderName: route.params.folderName,
+          });
         }}
         >
           <SelfText style={styles.createBtnTxt}>保存する</SelfText>
@@ -99,7 +102,6 @@ export default function NewMemo({ route, navigation }){
       </View>
     </Pressable>
     </>
-
     )
 }
 

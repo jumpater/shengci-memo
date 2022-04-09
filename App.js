@@ -13,7 +13,7 @@ import NewFolder from './components/memo/NewFolder';
 import AddList from './components/scan/AddList';
 import ScanScreen from './components/scan/ScanScreen';
 import ReadImage from './components/scan/ReadImage';
-import {Platform, UIManager,Image} from 'react-native';
+import {Platform, UIManager,Image,Pressable} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -35,7 +35,7 @@ const Home = ()=>{
         fontSize: 18,
       },
     }}>
-      <Stack.Screen name="MemoFolders" component={MemoFolders} options={({navigation})=>({
+      <Stack.Screen name="MemoFolders" component={MemoFolders} options={({route, navigation})=>({
         title: "単語フォルダー",
         headerRight:()=>{
           return (
@@ -47,15 +47,24 @@ const Home = ()=>{
       <Stack.Screen name="FolderDetail" component={FolderDetail} options={({route, navigation})=>({
         title: `フォルダー: ${route.params.folderName}`,
       })} />
-      <Stack.Screen name="WordList" component={WordList} options={({navigation})=>({
-        title: "単語リスト",
+      <Stack.Screen name="WordList" component={WordList} options={({route, navigation})=>({
+        title: `単語リスト: ${route.params.folderName}`,
+        headerLeft:()=>{
+          return (
+            <Pressable style={{width: 44,height: 44, justifyContent:"center",alignItems:"flex-start",}}
+            onPress={()=>{navigation.navigate("MemoFolders")}}
+            >
+              <Image style={{width: 20,height: 20,resizeMode: "contain",}} source={require("./assets/back-arrow.png")}/>
+            </Pressable>
+          )
+        },
         headerRight:()=>{
           return (
-          <NewMemoButton navigation={navigation} />
+          <NewMemoButton navigation={navigation} route={route}/>
           )
         }
         })} />
-      <Stack.Screen name="NewMemo" component={NewMemo} options={{title: "新しいメモを作成",}} />
+      <Stack.Screen name="NewMemo" component={NewMemo} options={({route, navigation})=>({title: `新しいメモを作成`})} />
     </Stack.Navigator>
   );
 }

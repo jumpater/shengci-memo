@@ -11,7 +11,6 @@ export default class StrageClassManager{
             const json = await AsyncStorage.getItem(this.type);
             const savedAry = json? JSON.parse(json): [];
             let exsistFlag = false;
-
             if(savedAry.length){
                 for(const saved of savedAry){
                     if(obj.id === saved.id){
@@ -25,6 +24,19 @@ export default class StrageClassManager{
 
             if(!exsistFlag){
                 savedAry.push(obj);
+
+                //if is MemoCard, update Memofolder.memoNum
+                if(obj.type.indexOf("MemoCard") === 0){
+                    const foldersJson = await AsyncStorage.getItem("MemoFolder");
+                    const folders = foldersJson? JSON.parse(foldersJson): [];
+                    for(const folder of folders){
+                        if(obj.type.split("MemoCard")[1] == folder.id){
+                            folder.memoNum = savedAry.length
+                            break;
+                        }
+                    }
+                    await AsyncStorage.setItem("MemoFolder",JSON.stringify(folders));
+                }
                 //idNum(Id生成時に使用)を更新
                 await AsyncStorage.setItem(`${this.type}IdNum`, `${obj.id}`);
             }

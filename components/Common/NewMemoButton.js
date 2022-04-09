@@ -4,7 +4,7 @@ import SelfText from './SelfText';
 
 export default NewMemoButton=(props)=>{
     return (
-        <Pressable onPress={()=>{props.navigation.navigate('NewMemo',{existingMemo: null});}}>
+        <Pressable onPress={()=>{props.navigation.navigate('NewMemo',{existingMemo: null, id: props.route.params.id, folderName: props.route.params.folderName,});}}>
         <View style={styles.plus}>
             <SelfText style={styles.plusMark}>+</SelfText>
         </View>

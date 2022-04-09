@@ -5,6 +5,7 @@ import MemoFolder from '../../Classes/MemoFolder';
 import SelfText from '../Common/SelfText';
 import LoadAnim from '../Common/LoadAnim';
 import {useIsFocused} from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function MemoFolders({ route, navigation }){
@@ -23,6 +24,9 @@ export default function MemoFolders({ route, navigation }){
                 setFoldersEl(null);
             }
             console.log(foldersEl);
+            const allKeys = await AsyncStorage.getAllKeys();
+            console.log("allkeys:")
+            console.log(allKeys)
         })();
     },[isFocused])
     return (
@@ -45,7 +49,7 @@ function Folder(props){
         style={styles.memoFolder}
         onPress={()=>{
             props.navigation.navigate("WordList",{
-                id: props.name,
+                id: props.id,
                 folderName:props.name
               })
         }}>

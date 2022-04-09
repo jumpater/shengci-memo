@@ -8,7 +8,6 @@ import {Picker} from '@react-native-picker/picker';
 import LoadAnim from '../Common/LoadAnim';
 import MemoPager from '../Common/MemoPager';
 import {useIsFocused} from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default WordList=({ route,navigation })=>{
   const isFocused = useIsFocused();
@@ -24,13 +23,15 @@ export default WordList=({ route,navigation })=>{
   const queryCards = async (q="",qString="")=>{
     setLoadingNow(true);
     try{
-      const manager = new StrageClassManager('MemoCard');
+      const manager = new StrageClassManager('MemoCard'+route.params.id);
       let result = null;
       if(q!=="" && qString!==""){
         result = await manager.query(q, qString);
       }else{
         result = await manager.queryAll();
       }
+      console.log("result:");
+      console.log(result);
       return result;
     }catch(error){
       console.log(error);
@@ -75,7 +76,7 @@ export default WordList=({ route,navigation })=>{
       return;
     }
     //favFuncはお気に入り登録した後データを再読み込みするための関数
-    setCards(cardAry.map(el=>{return <Memo nav={navigation} key={el.id} obj={el} favFunc={async()=>{
+    setCards(cardAry.map(el=>{return <Memo nav={navigation} key={el.id} folderId={route.params.id} obj={el} favFunc={async()=>{
       const result = await queryCards('q', enterdText? `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`:"");
       setUpCards(sortCards(result, listNum));
     }}/>}));

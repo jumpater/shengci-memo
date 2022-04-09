@@ -5,7 +5,7 @@ import SelfText from './SelfText';
 import StrageClassManager from '../../Classes/StrageClassManager';
 
 export default function Memo(props){
-    const memoCard = MemoCard.include(props.obj);
+    const memoCard = MemoCard.include(props.obj,props.folderId);
     const [deleted, setDeleted] = React.useState(false);
     //連打禁止
     const [dontMash,setDontMash] = React.useState(false);
@@ -28,7 +28,7 @@ export default function Memo(props){
                 onPress={async()=>{
                     setDontMash(true);
                     memoCard.setFavorite(!memoCard.getFavorite());
-                    const manager = new StrageClassManager('MemoCard');
+                    const manager = new StrageClassManager('MemoCard'+props.folderId);
                     await manager.save(memoCard.passer());
                     await props.favFunc();
                     setDontMash(false);
@@ -71,7 +71,7 @@ export default function Memo(props){
                     disabled={dontMash}
                     onPress={()=>{
                         setDontMash(true);
-                        props.nav.navigate('NewMemo',{existingMemo: memoCard});
+                        props.nav.navigate('NewMemo',{existingMemo: memoCard,id: props.folderId,});
                         setDontMash(false);
                     }}
                     >

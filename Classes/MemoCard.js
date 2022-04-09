@@ -1,24 +1,25 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class MemoCard{
-    #type="MemoCard";
+    #type;
     #id;
     #word;
     #description;
     #favorite;
     #createdAt;
-    constructor(id=null, word=null, description=null){
+    constructor(folderId,id=null, word=null, description=null){
+        this.#type = "MemoCard" + folderId
         this.#id = id;
         this.#word = word;
         this.#description = description;
         this.#favorite = false;
         this.#createdAt = new Date().getTime();
     }
-    static async generateId(){
+    static async generateId(type){
         try{
-            const MemoIdNum = await AsyncStorage.getItem('MemoIdNum');
+            const MemoIdNum = await AsyncStorage.getItem(type+'IdNum');
             const currentNum = MemoIdNum? Number(MemoIdNum) + 1 : 1;
-            await AsyncStorage.setItem('MemoIdNum', `${currentNum}`);
+            await AsyncStorage.setItem(type+'IdNum', `${currentNum}`);
             return currentNum;
         }catch(error){
             console.log(error)
@@ -35,9 +36,9 @@ export default class MemoCard{
             createdAt: this.#createdAt,
         }
     }
-    static include(obj){
+    static include(obj,folderId){
             if(typeof obj !== 'object')return;
-            const self = new this();
+            const self = new this(folderId);
             try{
                 self.setId(obj.id);
                 self.setWord(obj.word);
@@ -58,6 +59,15 @@ export default class MemoCard{
             if(!json)return;
             const savedAry = JSON.parse(json);
             await AsyncStorage.setItem(this.#type, JSON.stringify(savedAry.filter(obj => this.#id !== obj.id)));
+
+            const foldersJson = await AsyncStorage.getItem("MemoFolder");
+            const folders = foldersJson? JSON.parse(foldersJson): [];
+            for(const folder of folders){
+                if(this.#type.split("MemoCard")[1] == folder.id){
+                    folder.memoNum = savedAry.length - 1
+                }
+            }
+            await AsyncStorage.setItem("MemoFolder",JSON.stringify(folders));
         }catch(error){
             console.log(error)
         }
@@ -84,6 +94,10 @@ export default class MemoCard{
     }
 
     /*setter*/
+    setType(){
+        this.#type = type;
+        return this;
+    }
     setId(id){
         this.#id = id;
         return this;
