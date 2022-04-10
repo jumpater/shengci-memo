@@ -9,6 +9,7 @@ export default function FolderDetail({ route, navigation }){
     const [createdAt, setCreatedAt] = useState("");
     const [loadingNow, setLoadingNow] = useState(false);
     useEffect(()=>{
+        console.log(navigation.getState());
         const date = new Date(route.params.createdAt);
         setCreatedAt(`${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`);
     },[])
@@ -54,15 +55,31 @@ export default function FolderDetail({ route, navigation }){
             <Pressable
             style={styles.boxLine}
             onPress={async()=>{
-                try{
-                    setLoadingNow(true);
-                    const folder = new MemoFolder(route.params.id,route.params.folderName,route.params.memoNum);
-                    await folder.delete();
-                    setLoadingNow(false);
-                    navigation.navigate("MemoFolders");
-                }catch(e){
-                    console.log(e);
-                }
+                Alert.alert("フォルダを削除",`フォルダ"${route.params.folderName}"を削除しますか？単語リストも削除されます`,[
+                    {
+                        text: "キャンセル",
+                        onPress: () =>{},
+                        style: "default",
+                    },
+                    {
+                        text: "OK",
+                        onPress: async() =>{
+                            try{
+                                setLoadingNow(true);
+                                const folder = new MemoFolder(route.params.id,route.params.folderName,route.params.memoNum);
+                                await folder.delete();
+                                setLoadingNow(false);
+                                navigation.reset({
+                                    index: 0,
+                                    routes: [{ name: 'MemoFolders' }],
+                                  });
+                            }catch(e){
+                                console.log(e);
+                            }
+                        },
+                        style: "default",
+                    }
+                ])
             }}
             >
                 <SelfText style={{color: "#FF4848",}}>このフォルダーを削除</SelfText>

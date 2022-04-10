@@ -1,19 +1,19 @@
-import React,{useState, useEffect} from 'react';
-import { StyleSheet, Pressable,View,Image,ScrollView} from 'react-native';
+import React,{useState, useEffect, useRef} from 'react';
+import {StyleSheet, Pressable,View,Image,ScrollView} from 'react-native';
 import StrageClassManager from '../../Classes/StrageClassManager';
-import MemoFolder from '../../Classes/MemoFolder';
 import SelfText from '../Common/SelfText';
 import LoadAnim from '../Common/LoadAnim';
 import {useIsFocused} from "@react-navigation/native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function MemoFolders({ route, navigation }){
     const isFocused = useIsFocused();
-    [foldersEl, setFoldersEl] = useState(null);
-    [loadingNow, setLoadingNow] = useState(false);
+    const [foldersEl, setFoldersEl] = useState(null);
+    const [loadingNow, setLoadingNow] = useState(false);
     useEffect(()=>{
         (async()=>{
+            console.log(navigation.getState());
+            setLoadingNow(true);
             const manager = new StrageClassManager('MemoFolder');
             const memoFolders = await manager.queryAll();
             console.log(memoFolders);
@@ -23,10 +23,7 @@ export default function MemoFolders({ route, navigation }){
                 //to keep consistency when all folders are deleted
                 setFoldersEl(null);
             }
-            console.log(foldersEl);
-            const allKeys = await AsyncStorage.getAllKeys();
-            console.log("allkeys:")
-            console.log(allKeys)
+            setLoadingNow(false);
         })();
     },[isFocused])
     return (

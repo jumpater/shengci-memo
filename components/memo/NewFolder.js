@@ -41,7 +41,7 @@ export default function NewFolder({ route, navigation }){
           }
           setEditable(false);
           //debug
-          // await AsyncStorage.clear();
+          await AsyncStorage.clear();
           const manager = new StrageClassManager("MemoFolder");
           const id = await MemoFolder.generateId();
           await manager.save(new MemoFolder(id, input).passer())

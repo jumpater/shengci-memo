@@ -11,6 +11,7 @@ export default ScanScreen=({navigation})=>{
     
     useEffect(() => {
       (async () => {
+        console.log(navigation.getState());
         const { status } = await Camera.requestCameraPermissionsAsync();
         setHasPermission(status === 'granted');
       })();

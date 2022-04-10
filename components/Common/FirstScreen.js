@@ -1,22 +1,18 @@
-import React, { useState } from 'react';
-import { Animated, Easing, StyleSheet, Text } from 'react-native';
+import React, { useState,useEffect } from 'react';
+import { Dimensions,Animated, Easing, StyleSheet, Text } from 'react-native';
 
-export default FirstScreen=()=>{
-  const fadeAnim = React.useRef(new Animated.Value(1)).current;
-  const [fadeFlag, setFadeFlag] = useState(false) 
-
-  React.useEffect(()=>{
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      easing: Easing.linear(),
-      duration: 1000,
-      delay: 3000,
-      useNativeDriver: true
-    }).start(()=>setFadeFlag(true));
-  },[])
+export default FirstScreen=({route, navigation})=>{
+    useEffect(()=>{
+      setTimeout(()=>{
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'MemoFolders' }],
+        });
+      },2000);
+    },[]);
   return (
     <>
-      <Animated.View style={[styles.firstScreen,{opacity: fadeAnim}, fadeFlag? {transform:[{scale: 0}],} : {}]}>
+      <Animated.View style={styles.firstScreen}>
         <Text style={styles.firstTxt}>汉语生词备忘录</Text>
       </Animated.View>
     </>

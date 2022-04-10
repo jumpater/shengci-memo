@@ -24,14 +24,11 @@ export default function Memo(props){
                 <SelfText numberOfLines={onDetail?0:1} ellipsizeMode="tail" style={styles.memoHeadText}>{memoCard.getWord()}</SelfText>
                 <TouchableOpacity
                 style={{width: "10%",}}
-                disabled={dontMash}
                 onPress={async()=>{
-                    setDontMash(true);
                     memoCard.setFavorite(!memoCard.getFavorite());
                     const manager = new StrageClassManager('MemoCard'+props.folderId);
                     await manager.save(memoCard.passer());
                     await props.favFunc();
-                    setDontMash(false);
                 }}
                 >
                     <Image style={{height:20,width: 20,}} source={memoCard.getFavorite()?require("../../assets/star02.png"):require("../../assets/star01.png")}/>

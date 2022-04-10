@@ -8,6 +8,13 @@ export default function PreMemo(props){
     const [textarea, setTextarea] = React.useState("");
     const [onDetail, setOnDetail] = React.useState(false);
     const [translated, setTranslated] = React.useState(false);
+    const [ifIncert, setIfIncert] = React.useState(false);
+    React.useEffect(()=>{
+        if(props.allTranslated && !ifIncert){
+            setTextarea(props.memoObjs.get(props.word))
+        }
+        setIfIncert(true);
+    },[])
     return (
         <Pressable
         style={[styles.memo]}
@@ -36,8 +43,8 @@ export default function PreMemo(props){
                 />
                 <View style={styles.memoBtns}>
                     <TouchableOpacity
-                    disabled={props.word.length > 100 || translated}
-                    style={[styles.translateButton, onDetail?{}:{height: 0,},props.word.length > 100 || translated?{opacity: 0.2,}:{}]}
+                    disabled={props.word.length > 100 || translated || props.allTranslated}
+                    style={[styles.translateButton, onDetail?{}:{height: 0,},props.word.length > 100 || translated || props.allTranslated?{opacity: 0.2,}:{}]}
                     onPress={async()=>{
                             if(props.word !==""){
                                 try{
