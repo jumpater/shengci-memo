@@ -24,7 +24,7 @@ const Home = ()=>{
   const Stack = createNativeStackNavigator();
   return(
     <Stack.Navigator
-    initialRouteName='FirstScreen'
+    initialRouteName='MemoFolders'
     screenOptions={{
       headerBackTitleVisible: false,
       headerStyle: {
@@ -37,9 +37,6 @@ const Home = ()=>{
         fontSize: 18,
       },
     }}>
-      <Stack.Screen name="FirstScreen" component={FirstScreen} options={({route, navigation})=>({
-        headerShown: false,
-      })}/>
       <Stack.Screen name="MemoFolders" component={MemoFolders} options={({route, navigation})=>({
         title: "単語フォルダー",
         headerRight:()=>{
@@ -116,11 +113,6 @@ export default function App() {
     'NotoSansJP-Regular': require('./assets/fonts/NotoSansJP-Regular.otf'),
   });
   if(!fontsLoaded){ return <AppLoading /> }
-  const getTabBarVisibility = (route) => {
-    const routeName = getFocusedRouteNameFromRoute(route);
-    const hideOnScreens = ["FirstScreen","undefined"]; // put here name of screen where you want to hide tabBar
-    return hideOnScreens.indexOf(routeName) <= -1 && routeName;
-  };
 
   return (
     <NavigationContainer>
@@ -141,8 +133,6 @@ export default function App() {
       }}>
         <Tab.Screen name="Memo" component={Home} options={({route})=>({
           title: 'メモ',
-          tabBarStyle:getTabBarVisibility(route)?{backgroundColor: "#00BCDA",height: 80,}:{display:"none"},
-          // tabBarVisible:getTabBarVisibility(route),
           tabBarLabel:({focused})=><SelfText style={[{fontSize: 10,fontFamily: 'NotoSansJP-Regular',fontWeight: 'bold',},focused?{color: "#DADA00",}:{color: "#fff",}]}>メモ</SelfText>,
           tabBarIcon:({focused})=><Image source={focused?require("./assets/icon-memo-active.png"):require("./assets/icon-memo.png")} style={{height: "100%", resizeMode: "contain",marginBottom: 5,}}/>,
           })}/>

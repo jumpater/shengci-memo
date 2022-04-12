@@ -66,7 +66,6 @@ export default function NewMemo({ route, navigation }){
         style={[styles.createBtn,input=="" || textarea==""?{opacity: 0.2,}:{}]}
         disabled={input=="" || textarea==""}
         onPress={async ()=>{
-          console.log("saving");
           if(input.length > 100 || textarea.length > 200){
             Alert.alert("文字数の超過","文字数制限(単語100字, 説明200字)を超過しています。指定文字以内に書き直して下さい",    [
               {

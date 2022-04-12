@@ -30,11 +30,8 @@ export default WordList=({ route,navigation })=>{
       }else{
         result = await manager.queryAll();
       }
-      console.log("result:");
-      console.log(result);
       return result;
     }catch(error){
-      console.log(error);
       return [];
     }
   }
@@ -52,10 +49,7 @@ export default WordList=({ route,navigation })=>{
     }
     //小数点切り上げで10ずづで区切った時のリストの数
     const allListNum = Math.ceil(cardAry.length / 10)
-    console.log(`allListNum:${allListNum}`)
-    console.log(`listNum:${listNum}`)
     if(allListNum > 1){
-      console.log("pager set")
       //ページ遷移用ページャセット
       setPager(<MemoPager listNum={listNum} allListNum={allListNum} setListNum={setListNum}></MemoPager>);
       //カードセット

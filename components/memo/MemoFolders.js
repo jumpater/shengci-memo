@@ -12,11 +12,9 @@ export default function MemoFolders({ route, navigation }){
     const [loadingNow, setLoadingNow] = useState(false);
     useEffect(()=>{
         (async()=>{
-            console.log(navigation.getState());
             setLoadingNow(true);
             const manager = new StrageClassManager('MemoFolder');
             const memoFolders = await manager.queryAll();
-            console.log(memoFolders);
             if(memoFolders.length){
                 setFoldersEl(memoFolders.map((folder)=><Folder key={folder.id} id={folder.id} name={folder.name} memoNum={folder.memoNum} createdAt={folder.createdAt} navigation={navigation} />));
             }else{

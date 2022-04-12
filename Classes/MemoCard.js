@@ -22,7 +22,6 @@ export default class MemoCard{
             await AsyncStorage.setItem(type+'IdNum', `${currentNum}`);
             return currentNum;
         }catch(error){
-            console.log(error)
         }
     }
     //a function in order to pass StrageManager
@@ -43,18 +42,14 @@ export default class MemoCard{
                 self.setId(obj.id);
                 self.setWord(obj.word);
                 self.setDescription(obj.description);
-                console.log("obj.favorite", obj.favorite)
                 self.setFavorite(obj.favorite);
                 self.setCreatedAt(obj.createdAt);
             }catch(error){
-                console.log(error);
-                console.log("a different object is detected");
             }
         return self;
     }
     async delete(){
         try{
-            console.log("thisType:",this.#type)
             const json = await AsyncStorage.getItem(this.#type);
             if(!json)return;
             const savedAry = JSON.parse(json);
@@ -69,7 +64,6 @@ export default class MemoCard{
             }
             await AsyncStorage.setItem("MemoFolder",JSON.stringify(folders));
         }catch(error){
-            console.log(error)
         }
     }
 

@@ -9,7 +9,6 @@ export default function FolderDetail({ route, navigation }){
     const [createdAt, setCreatedAt] = useState("");
     const [loadingNow, setLoadingNow] = useState(false);
     useEffect(()=>{
-        console.log(navigation.getState());
         const date = new Date(route.params.createdAt);
         setCreatedAt(`${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`);
     },[])
@@ -74,7 +73,6 @@ export default function FolderDetail({ route, navigation }){
                                     routes: [{ name: 'MemoFolders' }],
                                   });
                             }catch(e){
-                                console.log(e);
                             }
                         },
                         style: "default",

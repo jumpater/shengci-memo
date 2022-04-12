@@ -21,7 +21,6 @@ export default AddList=({ route, navigation })=>{
     const [allTranslated, setAllTranslated] = useState(false);
     //配列と単語メモのマップ⇒描画
     useEffect(async()=>{
-      console.log(memoObjs);
       const ary = [];
       let i = 0;
       for(let key of memoObjs.keys()){
@@ -35,7 +34,6 @@ export default AddList=({ route, navigation })=>{
       if(folders.length){
         setFolders(folders.map(folder=><Picker.Item key={folder.id} label={folder.name} value={folder.id}/>))
       }
-      console.log(selectedFolder);
     },[allTranslated]);
 
     return (
@@ -49,8 +47,6 @@ export default AddList=({ route, navigation })=>{
             >
               <Pressable style={{flex: 7,width: '100%',}}
               onPress={()=>{
-                console.log("selectedFolder:"+selectedFolder)
-                console.log("selectedFolderName:"+selectedFolderName)
                 if(selectedFolder !== null && selectedFolderName !== ""){
                   Alert.alert(`メモを追加`,`フォルダー"${selectedFolderName}"にメモを追加しますか？`,[
                     {
@@ -109,7 +105,6 @@ export default AddList=({ route, navigation })=>{
                               url += "&target_lang=JA";
                               const result = await fetch(url);
                               const obj = await result.json();
-                              console.log(obj);
                               let i = 0;
                               for(let key of memoObjs.keys()){
                                 memoObjs.set(key,obj.translations[i].text)

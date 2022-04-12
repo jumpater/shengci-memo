@@ -42,7 +42,6 @@ export default class StrageClassManager{
             }
             await AsyncStorage.setItem(this.type, JSON.stringify(savedAry));
         }catch(error){
-            console.log(error)
             return null
         }
     }
@@ -58,7 +57,6 @@ export default class StrageClassManager{
             const queriedAry = new Function("savedAry",`return savedAry.filter(${q} => ${qString})`)(seachContext.savedAry);
             return queriedAry;
         }catch(error){
-            console.log(error)
             return [];
         }
     }
@@ -68,7 +66,6 @@ export default class StrageClassManager{
             const queriedAry = json? JSON.parse(json): [];
             return queriedAry;
         }catch(error){
-            console.log(error)
             return [];
         }
     }

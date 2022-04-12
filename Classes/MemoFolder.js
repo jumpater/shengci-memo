@@ -19,7 +19,6 @@ export default class MemoFolder{
             await AsyncStorage.setItem('MemoFolderIdNum', `${currentNum}`);
             return currentNum;
         }catch(error){
-            console.log(error)
         }
     }
     passer(){
@@ -40,25 +39,20 @@ export default class MemoFolder{
                 self.setMemoNum(obj.memoNum)
                 self.setCreatedAt(obj.createdAt);
             }catch(error){
-                console.log(error);
-                console.log("a different object is detected");
             }
         return self;
     }
     async delete(){
         try{
-            console.log("thisType:",this.#type);
             const json = await AsyncStorage.getItem(this.#type);
             if(!json)return;
             const savedAry = JSON.parse(json);
             await AsyncStorage.setItem(this.#type, JSON.stringify(savedAry.filter(obj => this.#id !== obj.id)));
-            console.log(this.#memoNum)
             if(this.#memoNum!=0){
                 await AsyncStorage.removeItem("MemoCard" + this.#id);
                 await AsyncStorage.removeItem("MemoCard" +this.#id + "IdNum");
             }
         }catch(error){
-            console.log(error)
         }
     }
 }

@@ -11,7 +11,6 @@ export default ScanScreen=({navigation})=>{
     
     useEffect(() => {
       (async () => {
-        console.log(navigation.getState());
         const { status } = await Camera.requestCameraPermissionsAsync();
         setHasPermission(status === 'granted');
       })();
@@ -51,7 +50,6 @@ export default ScanScreen=({navigation})=>{
                   })
                   const json = await result.json();
                   const ary = JSON.parse(json);
-                  console.log(ary.length)
                   if(ary.length){
                     navigation.navigate('ReadImage',
                     {
@@ -73,8 +71,6 @@ export default ScanScreen=({navigation})=>{
                }catch(e){
                   setLoadingNow(false)
                   camera.resumePreview();
-                  console.log(e)
-                  console.log("api was failed")
                   Alert.alert("エラー","電波環境などをお確かめの上もう一度お試し下さい",[
                     {
                         text: "撮り直す",
@@ -102,11 +98,9 @@ export default ScanScreen=({navigation})=>{
 
 const createImageObj = (image)=>{
   let localUri = image.uri;
-  console.log(localUri);
   let filename = localUri.split('/').pop();
   let match = /\.(\w+)$/.exec(filename);
   let type = match ? `image/${match[1]}` : `image`;
-  console.log(type)
   return { uri: localUri, name: filename, type };
 }
 
