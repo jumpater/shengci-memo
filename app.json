@@ -28,7 +28,7 @@
       "infoPlist": {
         "CFBundleLocalizations" : ["ja"],
         "CFBundleDevelopmentRegion" : "ja_JP",
-        "NSCameraUsageDescription": "このアプリは中国語を画像から認識するためにカメラを要求します。"
+        "NSCameraUsageDescription": "このアプリは画像から文字を認識するためにカメラを要求します。"
       }
     },
     "android": {

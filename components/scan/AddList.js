@@ -134,7 +134,23 @@ export default AddList=({ route, navigation })=>{
             <View style={styles.addButtonContainer}>
                 <TouchableOpacity style={styles.addButton}
                 onPress={async()=>{
-                  setModalVisible(true);
+                  if(folders.length){
+                    setModalVisible(true);
+                  }else{
+                    Alert.alert(
+                      "フォルダーが作成されていません",
+                      "単語を格納するフォルダーを作成する必要があります。",
+                      [
+                        {
+                          text: "フォルダー作成画面へ",
+                          onPress: () =>{
+                            navigation.navigate("NewFolder");
+                          },
+                          style: "default",
+                        },
+                      ]
+                    )
+                  }
                   }}>
                     <SelfText style={{color: "#fff",}}>保存先を選択</SelfText>
                 </TouchableOpacity>
