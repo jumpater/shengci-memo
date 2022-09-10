@@ -41,7 +41,7 @@ export default ScanScreen=({navigation})=>{
                let formData = new FormData();
                formData.append('file', createImageObj(image));
                try{
-                  const result = await fetch('https://obscure-fjord-44952.herokuapp.com/hanzi-ocr/', {
+                  const result = await fetch('https://shenci-ocr.onrender.com/hanzi-ocr/', {
                     method: 'POST',
                     body: formData,
                     headers: {
