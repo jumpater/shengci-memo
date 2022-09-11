@@ -6,7 +6,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "sdkVersion": "43.0.0",
+    "sdkVersion": "46.0.0",
     "platforms" :["ios","android"],
     "primaryColor" : "#00BCDA",
     "splash": {
