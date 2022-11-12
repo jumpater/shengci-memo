@@ -114,9 +114,7 @@ export default AddList=({ route, navigation })=>{
                             let i = 0;
                             for(let key of memoObjs.keys()){
                               memoObjs.set(key,obj.translations[i].text);
-                              console.log(refs[i]);
                               refs[i].current.changeTextarea(obj.translations[i].text);
-                              console.log(refs[i]);
                               refs[i].current.changeTraslated(true);
                               i++;
                             }

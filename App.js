@@ -110,7 +110,7 @@ SplashScreen.preventAutoHideAsync();
 
 
 export default function App() {
-  const [fontsloaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     'Deng': require('./assets/fonts/Deng.otf'),
     'NotoSansJP-Light': require('./assets/fonts/NotoSansJP-Light.otf'),
     'NotoSansJP-Regular': require('./assets/fonts/NotoSansJP-Regular.otf'),
@@ -122,7 +122,7 @@ export default function App() {
     }
   }, [fontsLoaded]);
 
-  if(!fontsloaded){
+  if(!fontsLoaded){
     return null;
   }
 

@@ -17,7 +17,6 @@ export default class PreMemo extends React.Component {
 
     changeTraslated(bool){
         this.setState({translated: bool});
-        console.log(this.state.translated);
     }
     changeTextarea(text){
         this.setState({textarea: text});
