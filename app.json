@@ -32,6 +32,11 @@
     },
     "android": {
     },
+    "extra": {
+      "eas": {
+        "projectId": "eae79f6c-08d5-4e4e-b377-62becb4bbaa0"
+      }
+    },
     "plugins": [
       ["expo-camera",
       {
