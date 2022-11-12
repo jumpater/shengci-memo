@@ -77,13 +77,29 @@ export default WordList=({ route,navigation })=>{
     setLoadingNow(false);
   }
     //絞り込み条件が変わった時1ページ目に戻りたい
-    React.useEffect(async()=>{
-      if(isInitialMount.current){
-        isInitialMount.current=false
-      }else{
-        if(listNum!==1){
-          setListNum(1);
+    React.useEffect(()=>{
+      (async()=>{
+        if(isInitialMount.current){
+          isInitialMount.current=false
         }else{
+          if(listNum!==1){
+            setListNum(1);
+          }else{
+            if(enterdText !== ""){
+              const result = await queryCards('q', `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`);
+              setUpCards(sortCards(result, listNum));
+            }else{
+            const result = await queryCards();
+            setUpCards(sortCards(result, listNum));
+            }
+          } 
+        }
+      })();
+    },[sort]);
+
+    React.useEffect(()=>{
+      (async()=>{
+        if(isFocused){
           if(enterdText !== ""){
             const result = await queryCards('q', `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`);
             setUpCards(sortCards(result, listNum));
@@ -91,20 +107,8 @@ export default WordList=({ route,navigation })=>{
           const result = await queryCards();
           setUpCards(sortCards(result, listNum));
           }
-        } 
-      }
-    },[sort]);
-  
-    React.useEffect(async()=>{
-      if(isFocused){
-        if(enterdText !== ""){
-          const result = await queryCards('q', `q.word.indexOf("${enterdText}") !== -1 || q.description.indexOf("${enterdText}") !== -1`);
-          setUpCards(sortCards(result, listNum));
-        }else{
-        const result = await queryCards();
-        setUpCards(sortCards(result, listNum));
         }
-      }
+      })();
     },[listNum, isFocused]);
 
     return (

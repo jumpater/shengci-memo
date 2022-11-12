@@ -1,21 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import {StyleSheet,View,TouchableOpacity,Image,Alert} from 'react-native';
 import { Camera } from 'expo-camera';
+import {useIsFocused} from "@react-navigation/native";
 import SelfText from '../Common/SelfText';
 import LoadAnim from '../Common/LoadAnim';
+import * as ScreenOrientation from 'expo-screen-orientation'
 
 export default ScanScreen=({navigation})=>{
+    const [orientation, setOrientation] = useState(ScreenOrientation.OrientationLock.DEFAULT);
     const [hasPermission, setHasPermission] = useState(null);
     const [camera, setCamera] = useState(null);
     const [loadingNow, setLoadingNow] = useState(false);
-    
-    useEffect(() => {
-      (async () => {
+    const isFocused = useIsFocused();
+
+    useEffect(()=>{
+      (async()=>{
+        await ScreenOrientation.unlockAsync();
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT);
         const { status } = await Camera.requestCameraPermissionsAsync();
         setHasPermission(status === 'granted');
+        ScreenOrientation.addOrientationChangeListener((evt)=>{
+          setOrientation(evt.orientationInfo.orientation);
+        });
       })();
-    }, []);
-  
+    },[isFocused]);
+
     if (hasPermission === null) {
       return <View />;
     }
@@ -30,7 +39,7 @@ export default ScanScreen=({navigation})=>{
          ref={ref=>{
            setCamera(ref)
          }}>
-          <View style={styles.buttonContainer}>
+          <View style={orientation === 4? styles.buttonContainer_ls : styles.buttonContainer}>
             <TouchableOpacity
               onPress={async() => {
                const image = await camera.takePictureAsync({
@@ -41,7 +50,7 @@ export default ScanScreen=({navigation})=>{
                let formData = new FormData();
                formData.append('file', createImageObj(image));
                try{
-                  const result = await fetch('https://obscure-fjord-44952.herokuapp.com/hanzi-ocr/', {
+                  const result = await fetch('https://shengci-memo-ocr.onrender.com/hanzi-ocr/', {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -51,6 +60,7 @@ export default ScanScreen=({navigation})=>{
                   const json = await result.json();
                   const ary = JSON.parse(json);
                   if(ary.length){
+                    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
                     navigation.navigate('ReadImage',
                     {
                       predictions:ary,
@@ -69,7 +79,6 @@ export default ScanScreen=({navigation})=>{
                   ]);
                   }
                }catch(e){
-                console.log(e);
                   setLoadingNow(false)
                   camera.resumePreview();
                   Alert.alert("エラー","電波環境などをお確かめの上もう一度お試し下さい",[
@@ -118,6 +127,15 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: "center",
       alignItems: 'flex-end',
+      margin: 20,
+      position:"relative",
+    },
+    buttonContainer_ls: {
+      flex: 1,
+      backgroundColor: 'transparent',
+      flexDirection: 'row',
+      justifyContent: "flex-end",
+      alignItems: 'center',
       margin: 20,
       position:"relative",
     },

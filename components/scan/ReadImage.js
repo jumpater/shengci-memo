@@ -6,13 +6,15 @@ export default ReadImage=(route,navigation)=>{
     const [cards, setCards] = useState(null);
     const [willSave, setWillSave] = useState(new Map());
     useEffect(()=>{
-        let {predictions} = route.route.params;
-        predictions = Array.from(new Set(predictions))
-        setCards(predictions.map((value,index)=>{
-            return (
-                <PredictedCard key={index} index={index} value={value} willSave={willSave} setWillSave={setWillSave}></PredictedCard>
-            )
-        }))
+        (async()=>{
+            let {predictions} = route.route.params;
+            predictions = Array.from(new Set(predictions));
+            setCards(predictions.map((value,index)=>{
+                return (
+                    <PredictedCard key={index} index={index} value={value} willSave={willSave} setWillSave={setWillSave}></PredictedCard>
+                )
+            }))
+        })();
     },[])
     return (
         <View style={styles.entireScreen}>

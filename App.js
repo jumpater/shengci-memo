@@ -1,7 +1,7 @@
 import React from 'react';
-import AppLoading from 'expo-app-loading';
+import * as SplashScreen from 'expo-splash-screen';
+import * as ScreenOrientation from 'expo-screen-orientation'
 import { useFonts } from 'expo-font';
-import FirstScreen from './components/Common/FirstScreen';
 import SelfText from './components/Common/SelfText';
 import NewMemoButton from './components/Common/NewMemoButton';
 import NewFolderButton from './components/Common/NewFolderButton';
@@ -17,7 +17,6 @@ import {Platform, UIManager,Image,Pressable} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 
 const Home = ()=>{
@@ -106,16 +105,30 @@ if (
 }
 
 const Tab = createBottomTabNavigator();
+
+
+SplashScreen.preventAutoHideAsync();
+
+
 export default function App() {
   let [fontsLoaded] = useFonts({
     'Deng': require('./assets/fonts/Deng.otf'),
     'NotoSansJP-Light': require('./assets/fonts/NotoSansJP-Light.otf'),
     'NotoSansJP-Regular': require('./assets/fonts/NotoSansJP-Regular.otf'),
   });
-  if(!fontsLoaded){ return <AppLoading /> }
+
+  const onLayoutRootView = React.useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer onReady={onLayoutRootView}>
       <Tab.Navigator
       initialRouteName='Memo'
       backBehavior="none"

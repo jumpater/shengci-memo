@@ -4,6 +4,7 @@ import StrageClassManager from '../../Classes/StrageClassManager';
 import SelfText from '../Common/SelfText';
 import LoadAnim from '../Common/LoadAnim';
 import {useIsFocused} from "@react-navigation/native";
+import * as ScreenOrientation from 'expo-screen-orientation'
 
 
 export default function MemoFolders({ route, navigation }){
@@ -12,6 +13,7 @@ export default function MemoFolders({ route, navigation }){
     const [loadingNow, setLoadingNow] = useState(false);
     useEffect(()=>{
         (async()=>{
+            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
             setLoadingNow(true);
             const manager = new StrageClassManager('MemoFolder');
             const memoFolders = await manager.queryAll();
