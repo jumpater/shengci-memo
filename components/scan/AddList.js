@@ -18,23 +18,31 @@ export default AddList=({ route, navigation })=>{
     const [selectedFolderName, setSelectedFolderName] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [folders,setFolders] = useState([]);
+    const [refs, setRefs] = useState([])
     const [allTranslated, setAllTranslated] = useState(false);
+
     //配列と単語メモのマップ⇒描画
-    useEffect(async()=>{
-      const ary = [];
-      let i = 0;
-      for(let key of memoObjs.keys()){
-          ary.push(<PreMemo key={i} word={key} memoObjs={memoObjs} setMemoObjs={setMemoObjs} setLoadingNow={setLoadingNow} allTranslated={allTranslated}></PreMemo>);
-          i++;
-      }
-      setCards(ary);
-      //get folder
-      const manager = new StrageClassManager("MemoFolder");
-      const folders = await manager.queryAll();
-      if(folders.length){
-        setFolders(folders.map(folder=><Picker.Item key={folder.id} label={folder.name} value={folder.id}/>))
-      }
-    },[allTranslated]);
+    useEffect(()=>{
+      (async()=>{
+        const ary = [];
+        const refArr = [];
+        let i = 0;
+        for(let key of memoObjs.keys()){
+            const ref = React.createRef();
+            ary.push(<PreMemo ref={ref} key={i} word={key} memoObjs={memoObjs} setMemoObjs={setMemoObjs} setLoadingNow={setLoadingNow}></PreMemo>);
+            refArr.push(ref);
+            i++;
+        }
+        setRefs(refArr); 
+        setCards(ary);
+        //get folder
+        const manager = new StrageClassManager("MemoFolder");
+        const folders = await manager.queryAll();
+        if(folders.length){
+          setFolders(folders.map(folder=><Picker.Item key={folder.id} label={folder.name} value={folder.id}/>))
+        }
+      })();
+    },[]);
 
     return (
       <View style={[{flex:1},modalVisible?{backgroundColor: "rgba(0,0,0,0.15)",}:{}]}>
@@ -96,22 +104,43 @@ export default AddList=({ route, navigation })=>{
                           text: "OK",
                           onPress: async() =>{
                             setLoadingNow(true);
+                            let url = `https://api-free.deepl.com/v2/translate?auth_key=${Constants.manifest.extra.translateApikey}&source_lang=ZH`;
+                            for(let key of memoObjs.keys()){
+                              url+=`&text=${key}`;
+                            }
+                            url += "&target_lang=JA";
+                            const result = await fetch(url);
+                            const obj = await result.json();
+                            let i = 0;
+                            for(let key of memoObjs.keys()){
+                              memoObjs.set(key,obj.translations[i].text);
+                              console.log(refs[i]);
+                              refs[i].current.changeTextarea(obj.translations[i].text);
+                              console.log(refs[i]);
+                              refs[i].current.changeTraslated(true);
+                              i++;
+                            }
+                            setAllTranslated(true);
+                            setMemoObjs(memoObjs);
+                            setLoadingNow(false);
                             try{
-                              setAllTranslated(true);
-                              let url = `https://api-free.deepl.com/v2/translate?auth_key=${Constants.manifest.extra.translateApikey}&source_lang=ZH`;
-                              for(let key of memoObjs.keys()){
-                                url+=`&text=${key}`;
-                              }
-                              url += "&target_lang=JA";
-                              const result = await fetch(url);
-                              const obj = await result.json();
-                              let i = 0;
-                              for(let key of memoObjs.keys()){
-                                memoObjs.set(key,obj.translations[i].text)
-                                i++
-                              }
-                              setMemoObjs(memoObjs);
-                              setLoadingNow(false);
+                              // let url = `https://api-free.deepl.com/v2/translate?auth_key=${Constants.manifest.extra.translateApikey}&source_lang=ZH`;
+                              // for(let key of memoObjs.keys()){
+                              //   url+=`&text=${key}`;
+                              // }
+                              // url += "&target_lang=JA";
+                              // const result = await fetch(url);
+                              // const obj = await result.json();
+                              // let i = 0;
+                              // for(let key of memoObjs.keys()){
+                              //   memoObjs.set(key,obj.translations[i].text);
+                              //   refs[i].current.changeTextarea(obj.translations[i].text);
+                              //   refs[i].current.changeTraslated(true);
+                              //   i++;
+                              // }
+                              // setAllTranslated(true);
+                              // setMemoObjs(memoObjs);
+                              // setLoadingNow(false);
                             }catch(e){
                               setLoadingNow(false);
                               Alert.alert("エラー","電波環境などをお確かめの上もう一度お試し下さい",[                        {

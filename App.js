@@ -1,6 +1,5 @@
 import React from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-import * as ScreenOrientation from 'expo-screen-orientation'
 import { useFonts } from 'expo-font';
 import SelfText from './components/Common/SelfText';
 import NewMemoButton from './components/Common/NewMemoButton';
@@ -111,7 +110,7 @@ SplashScreen.preventAutoHideAsync();
 
 
 export default function App() {
-  let [fontsLoaded] = useFonts({
+  const [fontsloaded] = useFonts({
     'Deng': require('./assets/fonts/Deng.otf'),
     'NotoSansJP-Light': require('./assets/fonts/NotoSansJP-Light.otf'),
     'NotoSansJP-Regular': require('./assets/fonts/NotoSansJP-Regular.otf'),
@@ -123,7 +122,7 @@ export default function App() {
     }
   }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
+  if(!fontsloaded){
     return null;
   }
 
