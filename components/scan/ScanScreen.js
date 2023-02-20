@@ -4,10 +4,11 @@ import { Camera } from 'expo-camera';
 import {useIsFocused} from "@react-navigation/native";
 import SelfText from '../Common/SelfText';
 import LoadAnim from '../Common/LoadAnim';
-import * as ScreenOrientation from 'expo-screen-orientation'
+import * as ScreenOrientation from 'expo-screen-orientation';
+
 
 export default ScanScreen=({navigation})=>{
-    const [orientation, setOrientation] = useState(ScreenOrientation.OrientationLock.DEFAULT);
+    const [orientation, setOrientation] = useState(ScreenOrientation.Orientation.PORTRAIT_UP);
     const [hasPermission, setHasPermission] = useState(null);
     const [camera, setCamera] = useState(null);
     const [loadingNow, setLoadingNow] = useState(false);
@@ -39,7 +40,7 @@ export default ScanScreen=({navigation})=>{
          ref={ref=>{
            setCamera(ref)
          }}>
-          <View style={orientation === 4? styles.buttonContainer_ls : styles.buttonContainer}>
+          <View style={orientation === 3 || orientation === 4 ? styles.buttonContainer_ls : styles.buttonContainer}>
             <TouchableOpacity
               onPress={async() => {
                const image = await camera.takePictureAsync({
@@ -60,7 +61,7 @@ export default ScanScreen=({navigation})=>{
                   const json = await result.json();
                   const ary = JSON.parse(json);
                   if(ary.length){
-                    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+                    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
                     navigation.navigate('ReadImage',
                     {
                       predictions:ary,
@@ -79,7 +80,7 @@ export default ScanScreen=({navigation})=>{
                   ]);
                   }
                }catch(e){
-                  setLoadingNow(false)
+                  setLoadingNow(false);
                   camera.resumePreview();
                   Alert.alert("エラー","電波環境などをお確かめの上もう一度お試し下さい",[
                     {
@@ -92,13 +93,6 @@ export default ScanScreen=({navigation})=>{
               }}>
               <Image style={{height:70, width:70,}} source={require("../../assets/shutter-button.png")}/>
             </TouchableOpacity>
-            {/* <TouchableOpacity
-              style={styles.flashButton}
-              onPress={() => {
-                setIsFlashMode(isFlashMode === Camera.Constants.FlashMode.off?isFlashMode === Camera.Constants.FlashMode.on:Camera.Constants.FlashMode.off) 
-              }}>
-              <Image source={isFlashMode === Camera.Constants.FlashMode.off?require("../../assets/flash-button.png"):require("../../assets/notflash-button.png")}/>
-            </TouchableOpacity> */}
           </View>
         </Camera>
       </View>
