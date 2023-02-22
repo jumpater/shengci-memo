@@ -7,15 +7,19 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "sdkVersion": "46.0.0",
-    "platforms" :["ios","android"],
-    "primaryColor" : "#00BCDA",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "primaryColor": "#00BCDA",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#00BCDA"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/eae79f6c-08d5-4e4e-b377-62becb4bbaa0"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -26,24 +30,40 @@
       "buildNumber": "1.1.1",
       "bundleIdentifier": "shenciMemo",
       "infoPlist": {
-        "CFBundleLocalizations" : ["ja"],
-        "CFBundleDevelopmentRegion" : "ja_JP",
+        "CFBundleLocalizations": [
+          "ja"
+        ],
+        "CFBundleDevelopmentRegion": "ja_JP",
         "NSCameraUsageDescription": "このアプリは画像から文字を認識するためにカメラを要求します。"
       }
     },
     "android": {
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "plugins": [
-      ["expo-camera",
-      {
-        "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to access your location"
-      }],
+      [
+        "expo-camera",
+        {
+          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to access your location"
+        }
+      ],
       [
         "expo-screen-orientation",
         {
           "initialOrientation": "PORTRAIT"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "eae79f6c-08d5-4e4e-b377-62becb4bbaa0"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    }
   }
 }
