@@ -3,13 +3,12 @@
     "name": "汉语生词备忘录",
     "slug": "shengciMemo",
     "description": "このアプリは中国語を勉強する日本人向けのメモ帳アプリです。単語を記録するメモ機能の他に、画像から中国語の文章を読み取り、単語レベルに分解してメモとして保存する機能や、単語の自動翻訳等の機能が利用できます。",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "sdkVersion": "46.0.0",
     "platforms": [
-      "ios",
-      "android"
+      "ios"
     ],
     "primaryColor": "#00BCDA",
     "splash": {
@@ -24,25 +23,6 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": false,
-      "requireFullScreen": true,
-      "buildNumber": "1.1.1",
-      "bundleIdentifier": "shenciMemo",
-      "infoPlist": {
-        "CFBundleLocalizations": [
-          "ja"
-        ],
-        "CFBundleDevelopmentRegion": "ja_JP",
-        "NSCameraUsageDescription": "このアプリは画像から文字を認識するためにカメラを要求します。"
-      }
-    },
-    "android": {
-      "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
-      ]
-    },
     "plugins": [
       [
         "expo-camera",
@@ -57,9 +37,17 @@
         }
       ]
     ],
-    "extra": {
-      "eas": {
-        "projectId": "eae79f6c-08d5-4e4e-b377-62becb4bbaa0"
+    "ios": {
+      "supportsTablet": false,
+      "requireFullScreen": true,
+      "buildNumber": "1.1.2",
+      "bundleIdentifier": "shenciMemo",
+      "infoPlist": {
+        "CFBundleLocalizations": [
+          "ja"
+        ],
+        "CFBundleDevelopmentRegion": "ja_JP",
+        "NSCameraUsageDescription": "このアプリは画像から文字を認識するためにカメラを要求します。"
       }
     },
     "runtimeVersion": {

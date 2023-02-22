@@ -9,7 +9,8 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-assets/
-# macOS
 .DS_Store
+
+# need to commentout bellow code for eas building↓
+assets/
 app.config.js
