@@ -8,7 +8,6 @@ import LoadAnim from '../Common/LoadAnim';
 import Constants from 'expo-constants';
 import {Picker} from '@react-native-picker/picker';
 import ModalCore from '../Common/ModalCore';
-import { CommonActions } from '@react-navigation/native'
 
 export default AddList=({ route, navigation })=>{
     const [cards, setCards] = useState(null);

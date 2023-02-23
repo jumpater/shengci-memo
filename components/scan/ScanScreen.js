@@ -61,7 +61,7 @@ export default ScanScreen=({navigation})=>{
                   const json = await result.json();
                   const ary = JSON.parse(json);
                   if(ary.length){
-                    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+                    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
                     navigation.navigate('ReadImage',
                     {
                       predictions:ary,
@@ -71,7 +71,7 @@ export default ScanScreen=({navigation})=>{
                   }else{
                     setLoadingNow(false)
                     camera.resumePreview();
-                    Alert.alert("エラー","中国語を正しく認識出来ませんでした",[
+                    Alert.alert("エラー","中国語を正しく認識出来ませんでした。\n\n「設定」 > 「カメラ」 > 「フォーマット」 が「互換性優先」に設定されていることをお確かめの上もう一度お試し下さい。",[
                       {
                           text: "撮り直す",
                           onPress: () =>{},
@@ -82,7 +82,9 @@ export default ScanScreen=({navigation})=>{
                }catch(e){
                   setLoadingNow(false);
                   camera.resumePreview();
-                  Alert.alert("エラー","電波環境などをお確かめの上もう一度お試し下さい",[
+                  Alert.alert(
+                    "エラー","以下をお確かめの上もう一度お試し下さい\n\n・電波環境\n・「設定」 > 「カメラ」 > 「フォーマット」 を「互換性優先」に設定",
+                    [
                     {
                         text: "撮り直す",
                         onPress: () =>{},
